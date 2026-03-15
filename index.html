@@ -1,0 +1,2396 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة ذاكر</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05080f;--surface:#0b1220;--card:#101a2e;--card2:#152238;
+  --border:#1b2d48;--blue:#3b82f6;--cyan:#06b6d4;--gold:#f59e0b;
+  --green:#10b981;--red:#ef4444;--purple:#8b5cf6;--pink:#ec4899;
+  --text:#e2e8f0;--muted:#4b6380;--soft:#8aa4c0;
+  --glow:rgba(59,130,246,0.2);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse 50% 35% at 85% 5%,rgba(59,130,246,0.07) 0%,transparent 65%),
+  radial-gradient(ellipse 35% 25% at 5% 90%,rgba(6,182,212,0.05) 0%,transparent 60%);
+  pointer-events:none;z-index:0;}
+
+/* ══ SCREENS ══ */
+.screen{display:none;position:relative;z-index:1;}
+.screen.on{display:block;}
+#screen-auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+#screen-auth.on{display:flex;}
+
+/* ══ AUTH ══ */
+.auth-wrap{width:100%;max-width:420px;}
+.auth-logo{text-align:center;margin-bottom:32px;}
+.auth-logo h1{font-size:2.4rem;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,#60a5fa,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.auth-logo p{color:var(--muted);font-size:.85rem;margin-top:6px;}
+.auth-tabs{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:4px;margin-bottom:22px;}
+.auth-tab{flex:1;padding:10px;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;background:transparent;color:var(--muted);}
+.auth-tab.on{background:var(--card2);color:#93c5fd;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;}
+.fg{margin-bottom:16px;}
+.fg label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.fi{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px 16px;color:var(--text);font-family:'Cairo',sans-serif;font-size:.92rem;transition:all .2s;}
+.fi::placeholder{color:var(--muted);}
+.fi:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--glow);}
+.role-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.role-btn{padding:12px;border:1px solid var(--border);border-radius:11px;background:var(--surface);font-family:'Cairo',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);cursor:pointer;text-align:center;transition:all .2s;}
+.role-btn:hover{border-color:var(--blue);color:var(--text);}
+.role-btn.on{border-color:#60a5fa;background:rgba(59,130,246,.1);color:#93c5fd;}
+.role-btn .ri{font-size:1.4rem;display:block;margin-bottom:4px;}
+.big-btn{width:100%;padding:14px;border:none;border-radius:12px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;}
+.big-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(59,130,246,.35);}
+.big-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.auth-err{display:none;color:#fca5a5;font-size:.82rem;text-align:center;margin-top:12px;padding:10px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2);}
+.auth-err.on{display:block;}
+
+/* ══ NAV ══ */
+nav{position:sticky;top:0;z-index:200;background:rgba(5,8,15,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:54px;}
+.nav-logo{font-size:1.1rem;font-weight:900;background:linear-gradient(135deg,#60a5fa,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex-shrink:0;}
+.nav-tabs{display:none;gap:2px;}
+.ntab{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700;color:var(--muted);background:transparent;transition:all .2s;}
+.ntab:hover{color:var(--text);background:var(--surface);}
+.ntab.on{color:#93c5fd;background:rgba(59,130,246,.12);}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.user-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 10px 4px 6px;}
+.nav-name{font-size:.76rem;color:var(--soft);max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.nav-pts{font-size:.72rem;font-weight:700;color:var(--gold);}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;color:#fff;flex-shrink:0;}
+.logout-btn{padding:5px 10px;border:1px solid var(--border);border-radius:8px;background:transparent;font-family:'Cairo',sans-serif;font-size:.72rem;color:var(--muted);cursor:pointer;transition:all .2s;}
+.logout-btn:hover{border-color:var(--red);color:#fca5a5;}
+
+/* ══ BOTTOM NAV ══ */
+.bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(5,8,15,.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);height:60px;padding:0 4px;align-items:center;justify-content:space-around;}
+.bnav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:1;padding:7px 2px;border:none;background:transparent;cursor:pointer;transition:all .2s;border-radius:10px;}
+.bnav-btn .bi{font-size:1.15rem;transition:transform .2s;}
+.bnav-btn .bl{font-size:.58rem;font-weight:700;color:var(--muted);font-family:'Cairo',sans-serif;transition:color .2s;}
+.bnav-btn.on .bl{color:#60a5fa;}
+.bnav-btn.on .bi{transform:scale(1.2);}
+
+/* ══ DESKTOP ══ */
+@media(min-width:640px){
+  .nav-tabs{display:flex;}
+  .bottom-nav{display:none;}
+  .page{padding-bottom:40px !important;}
+  footer{display:block !important;}
+}
+
+/* ══ PAGES ══ */
+.page{display:none;max-width:880px;margin:0 auto;padding:24px 16px 88px;position:relative;z-index:1;}
+.page.on{display:block;animation:fadeUp .4s ease both;}
+
+/* ══ HERO ══ */
+.hero{text-align:center;padding:14px 0 26px;}
+.hero h2{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:900;line-height:1.3;margin-bottom:7px;}
+.gr{background:linear-gradient(135deg,#60a5fa,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{color:var(--muted);font-size:.88rem;}
+
+/* ══ STAT STRIP ══ */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:22px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;}
+.sc .v{font-size:1.4rem;font-weight:900;}
+.sc .l{font-size:.65rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.v-blue{color:#60a5fa;}.v-green{color:#34d399;}.v-gold{color:#fbbf24;}.v-purple{color:#a78bfa;}
+
+/* ══ SECTION TITLE ══ */
+.stitle{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.stitle::before{content:'';width:3px;height:13px;background:linear-gradient(var(--blue),var(--cyan));border-radius:2px;display:block;}
+
+/* ══ SUBJECT GRID ══ */
+.subj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:20px;}
+.sj{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px 7px;text-align:center;cursor:pointer;transition:all .2s;}
+.sj:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 20px var(--glow);}
+.sj.on{border-color:#60a5fa;background:rgba(59,130,246,.09);box-shadow:0 0 0 1px #60a5fa,0 6px 20px var(--glow);}
+.sj .ic{font-size:1.5rem;display:block;margin-bottom:4px;}
+.sj .nm{font-size:.78rem;font-weight:700;}.sj.on .nm{color:#93c5fd;}
+.sj .bs{font-size:.62rem;color:var(--muted);margin-top:2px;}
+
+/* ══ SETTINGS ══ */
+.settings-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+.fld label{display:block;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;}
+.fld select,.fld input,.topic-in{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-family:'Cairo',sans-serif;font-size:.84rem;transition:all .2s;appearance:none;}
+.fld select:focus,.fld input:focus,.topic-in:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--glow);}
+.topic-row{margin-bottom:16px;}
+.topic-row label{display:block;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;}
+.topic-in::placeholder{color:var(--muted);}
+
+/* ══ QUIZ ══ */
+.quiz-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;}
+.timer-box{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:7px 14px;min-width:78px;justify-content:center;}
+.t-num{font-size:1rem;font-weight:900;color:#60a5fa;transition:color .3s;}
+.t-num.hot{color:var(--red);animation:blink .5s infinite alternate;}
+.qinfo{text-align:center;}
+.qinfo-lbl{font-size:.65rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+.qinfo-sub{font-size:.82rem;font-weight:700;color:#93c5fd;}
+.live-sc{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:7px 13px;font-size:.82rem;font-weight:700;}
+.live-sc .ok{color:#34d399;}.live-sc .sep{color:var(--muted);}
+.prog-track{height:5px;background:var(--border);border-radius:3px;margin-bottom:16px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#3b82f6,#06b6d4);transition:width .5s cubic-bezier(.4,0,.2,1);}
+.dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .2s;}
+.dot.cur{background:#60a5fa;transform:scale(1.4);}
+.dot.ok{background:var(--green);}
+.dot.fail{background:var(--red);}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:13px;animation:fadeUp .3s ease both;}
+.q-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.22);border-radius:20px;padding:3px 11px;font-size:.66rem;font-weight:700;color:#60a5fa;margin-bottom:13px;}
+.q-text{font-size:.98rem;font-weight:600;line-height:1.8;color:#f1f5f9;margin-bottom:18px;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px 15px;text-align:right;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.88rem;color:var(--text);transition:all .18s;display:flex;align-items:center;gap:10px;}
+.opt-l{min-width:27px;height:27px;border-radius:7px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:var(--muted);transition:all .18s;flex-shrink:0;}
+.opt:hover:not(:disabled){border-color:#60a5fa;background:rgba(59,130,246,.05);}
+.opt:hover:not(:disabled) .opt-l{background:var(--blue);color:#fff;}
+.opt.correct{border-color:var(--green);background:rgba(16,185,129,.07);color:#6ee7b7;}
+.opt.correct .opt-l{background:var(--green);color:#fff;}
+.opt.wrong{border-color:var(--red);background:rgba(239,68,68,.07);color:#fca5a5;}
+.opt.wrong .opt-l{background:var(--red);color:#fff;}
+.opt:disabled{cursor:default;}
+.expl{display:none;margin-top:13px;padding:13px 15px;background:rgba(6,182,212,.05);border:1px solid rgba(6,182,212,.15);border-radius:11px;font-size:.83rem;line-height:1.8;color:#7dd3fc;animation:fadeUp .25s ease both;}
+.expl.on{display:block;}
+.expl strong{color:#22d3ee;}
+.quiz-nav{display:flex;gap:9px;justify-content:space-between;align-items:center;margin-top:16px;}
+.btn{padding:10px 20px;border-radius:11px;border:none;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.86rem;font-weight:700;transition:all .2s;}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--muted);}
+.btn-ghost:hover{border-color:var(--blue);color:var(--text);}
+.btn-primary{background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px var(--glow);}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+/* ══ RESULTS ══ */
+.res-hero{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:32px 24px;text-align:center;margin-bottom:16px;}
+.ring-wrap{position:relative;width:120px;height:120px;margin:0 auto 18px;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:8;}
+.ring-fg{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s ease;}
+.ring-txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-txt .big{font-size:1.6rem;font-weight:900;}
+.ring-txt .sm{font-size:.65rem;color:var(--muted);font-weight:600;}
+.res-title{font-size:1.4rem;font-weight:900;margin-bottom:6px;}
+.res-sub{color:var(--muted);font-size:.86rem;margin-bottom:20px;}
+.res-stats{display:flex;justify-content:center;gap:22px;margin-bottom:20px;flex-wrap:wrap;}
+.rs .n{font-size:1.6rem;font-weight:900;}
+.rs .l{font-size:.65rem;color:var(--muted);font-weight:700;text-transform:uppercase;}
+.pts-earned{display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:12px;padding:10px 20px;margin-bottom:20px;font-size:.9rem;font-weight:700;color:#fbbf24;}
+.res-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;}
+.bkdn{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:16px;}
+.bkdn-title{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+.bbar{margin-bottom:10px;}
+.bbar-lbl{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:4px;}
+.bbar-track{height:6px;background:var(--border);border-radius:4px;overflow:hidden;}
+.bbar-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.4,0,.2,1);}
+
+/* ══ BADGES ══ */
+.badges-section{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:16px;}
+.badges-grid{display:flex;gap:10px;flex-wrap:wrap;}
+.badge-item{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 10px;border-radius:12px;border:1px solid var(--border);background:var(--surface);min-width:72px;text-align:center;transition:all .2s;}
+.badge-item.earned{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.06);box-shadow:0 0 12px rgba(245,158,11,.15);}
+.badge-item.locked{opacity:.35;filter:grayscale(1);}
+.badge-em{font-size:1.6rem;}
+.badge-nm{font-size:.62rem;font-weight:700;color:var(--muted);}
+.badge-item.earned .badge-nm{color:#fbbf24;}
+
+/* ══ LEADERBOARD ══ */
+.lb-list{display:flex;flex-direction:column;gap:7px;}
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border-radius:12px;border:1px solid var(--border);transition:all .2s;}
+.lb-row.me{border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.06);}
+.lb-rank{font-size:1rem;font-weight:900;min-width:28px;text-align:center;}
+.lb-rank.r1{color:#fbbf24;}
+.lb-rank.r2{color:#94a3b8;}
+.lb-rank.r3{color:#fb923c;}
+.lb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:900;color:#fff;flex-shrink:0;}
+.lb-name{flex:1;font-weight:700;font-size:.88rem;}
+.lb-pts{font-size:.82rem;font-weight:900;color:#fbbf24;}
+.lb-exams{font-size:.68rem;color:var(--muted);}
+
+/* ══ FLASHCARDS ══ */
+.fc-tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;}
+.fc-tag{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .18s;}
+.fc-tag:hover{border-color:var(--blue);color:var(--text);}
+.fc-tag.on{background:rgba(59,130,246,.1);border-color:#60a5fa;color:#93c5fd;}
+.fc-arena{display:none;}
+.fc-arena.on{display:block;animation:fadeUp .4s ease both;}
+.fc-prog{font-size:.76rem;color:var(--muted);font-weight:700;text-align:center;margin-bottom:12px;}
+.flip-wrap{perspective:1000px;height:200px;cursor:pointer;margin-bottom:16px;}
+.flip-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);}
+.flip-inner.flipped{transform:rotateY(180deg);}
+.flip-face{position:absolute;inset:0;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;backface-visibility:hidden;}
+.flip-front{background:var(--card);border:1px solid var(--border);}
+.flip-back{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(6,182,212,.06));border:1px solid rgba(59,130,246,.25);transform:rotateY(180deg);}
+.fc-hint{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px;}
+.fc-q{font-size:.95rem;font-weight:700;line-height:1.7;color:#f1f5f9;}
+.fc-a{font-size:.9rem;font-weight:600;line-height:1.7;color:#93c5fd;}
+.fc-em{font-size:1.7rem;margin-bottom:7px;}
+.fc-btns{display:flex;gap:8px;justify-content:center;}
+.fcb{padding:10px 20px;border-radius:11px;border:none;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.83rem;font-weight:700;transition:all .2s;}
+.fcb:hover{transform:translateY(-2px);}
+.fcb-again{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:#fca5a5;}
+.fcb-good{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.22);color:#6ee7b7;}
+.fcb-easy{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.22);color:#fcd34d;}
+
+/* ══ PROGRESS ══ */
+.pg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.pg-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;}
+.pg-card.full{grid-column:1/-1;}
+.pg-num{font-size:1.9rem;font-weight:900;margin-bottom:3px;}
+.pg-lbl{font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+.hist-list{display:flex;flex-direction:column;gap:6px;}
+.hist-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);font-size:.8rem;}
+.hist-subj{font-weight:700;}
+.hist-date{font-size:.65rem;color:var(--muted);}
+.hbadge{padding:3px 9px;border-radius:20px;font-size:.72rem;font-weight:700;}
+.hb-hi{background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2);}
+.hb-mid{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2);}
+.hb-lo{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);}
+.subj-perf{display:flex;flex-direction:column;gap:8px;}
+.sp-row{display:flex;align-items:center;gap:10px;font-size:.8rem;}
+.sp-name{min-width:65px;font-weight:700;}
+.sp-track{flex:1;height:6px;background:var(--border);border-radius:4px;overflow:hidden;}
+.sp-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.sp-pct{min-width:32px;text-align:left;font-weight:700;font-size:.75rem;}
+
+/* ══ TEACHER ══ */
+.t-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.t-tab{padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:var(--surface);font-family:'Cairo',sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;}
+.t-tab:hover{border-color:var(--blue);color:var(--text);}
+.t-tab.on{background:rgba(59,130,246,.1);border-color:#60a5fa;color:#93c5fd;}
+.t-panel{display:none;}
+.t-panel.on{display:block;animation:fadeUp .3s ease both;}
+.stu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:18px;}
+.stu-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:16px;}
+.stu-top{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+.stu-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:900;color:#fff;flex-shrink:0;}
+.stu-name{font-weight:700;font-size:.85rem;}
+.stu-role{font-size:.65rem;color:var(--muted);}
+.stu-stats{display:flex;gap:10px;}
+.stu-stat .sv{font-size:1rem;font-weight:900;color:#60a5fa;}
+.stu-stat .sl{font-size:.62rem;color:var(--muted);font-weight:600;text-transform:uppercase;}
+.t-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.t-sum{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;}
+.t-sum .tv{font-size:1.6rem;font-weight:900;margin-bottom:3px;}
+.t-sum .tl{font-size:.65rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+.weak-list{display:flex;flex-direction:column;gap:7px;}
+.weak-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);font-size:.82rem;}
+
+/* ══ QUESTION BANK ══ */
+.qbank-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.qb-filter{padding:6px 13px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-family:'Cairo',sans-serif;font-size:.76rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .18s;}
+.qb-filter:hover{border-color:var(--blue);color:var(--text);}
+.qb-filter.on{background:rgba(59,130,246,.1);border-color:#60a5fa;color:#93c5fd;}
+.qbank-list{display:flex;flex-direction:column;gap:9px;}
+.qb-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;}
+.qb-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.qb-subj{font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:#60a5fa;}
+.qb-yr{font-size:.68rem;color:var(--muted);font-weight:600;}
+.qb-diff{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;}
+.qb-diff.easy{background:rgba(16,185,129,.1);color:#34d399;}
+.qb-diff.med{background:rgba(245,158,11,.1);color:#fbbf24;}
+.qb-diff.hard{background:rgba(239,68,68,.1);color:#f87171;}
+.qb-q{font-size:.88rem;font-weight:600;line-height:1.7;color:#f1f5f9;margin-bottom:10px;}
+.qb-opts{display:flex;flex-direction:column;gap:5px;}
+.qb-opt{font-size:.8rem;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--muted);}
+.qb-opt.correct{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.07);color:#6ee7b7;}
+
+/* ══ LOADING ══ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(5,8,15,.9);backdrop-filter:blur(8px);z-index:500;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.overlay.on{display:flex;}
+.spin{width:46px;height:46px;border:3px solid var(--border);border-top-color:#60a5fa;border-radius:50%;animation:spin .75s linear infinite;}
+.overlay p{font-size:.88rem;color:var(--muted);}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:10px 20px;font-size:.84rem;font-weight:700;opacity:0;transition:all .3s;z-index:400;white-space:nowrap;pointer-events:none;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:var(--green);color:#6ee7b7;}
+.toast.fail{border-color:var(--red);color:#fca5a5;}
+.toast.pts{border-color:var(--gold);color:#fbbf24;}
+
+/* ══ FOOTER ══ */
+footer{display:none;text-align:center;padding:22px 0 32px;position:relative;z-index:1;}
+.credit{display:inline-flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--border);border-radius:50px;padding:7px 18px;}
+.cdot{width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));box-shadow:0 0 7px rgba(59,130,246,.5);animation:pulse-dot 2s ease infinite;}
+.cby{font-size:.7rem;color:var(--muted);font-weight:600;}
+.cname{font-size:.8rem;font-weight:700;background:linear-gradient(135deg,#60a5fa,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes blink{from{opacity:1;}to{opacity:.3;}}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.65);}}
+@keyframes popIn{0%{transform:scale(.5);opacity:0;}70%{transform:scale(1.2);}100%{transform:scale(1);opacity:1;}}
+
+@media(max-width:560px){
+  .stat-strip{grid-template-columns:repeat(2,1fr);}
+  .settings-row{grid-template-columns:1fr 1fr;}
+  .pg-grid{grid-template-columns:1fr;}
+  .pg-card.full{grid-column:1;}
+  .subj-grid{grid-template-columns:repeat(3,1fr);}
+  .t-summary-grid{grid-template-columns:1fr 1fr;}
+  .plans-grid{grid-template-columns:1fr !important;}
+}
+
+/* ══ SUBSCRIPTION ══ */
+#screen-sub{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+#screen-sub.on{display:flex;}
+.sub-wrap{width:100%;max-width:700px;}
+.sub-logo{text-align:center;margin-bottom:8px;}
+.sub-logo h2{font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#60a5fa,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sub-logo p{color:var(--muted);font-size:.85rem;margin-top:4px;}
+.sub-badge{display:inline-block;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:#fbbf24;font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:20px;margin-bottom:20px;}
+.billing-toggle{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:28px;}
+.billing-toggle span{font-size:.85rem;font-weight:700;color:var(--muted);transition:color .2s;}
+.billing-toggle span.on{color:var(--text);}
+.toggle-track{width:48px;height:26px;background:var(--border);border-radius:20px;cursor:pointer;position:relative;transition:background .2s;}
+.toggle-track.yearly{background:var(--blue);}
+.toggle-thumb{position:absolute;top:3px;right:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .25s;}
+.toggle-track.yearly .toggle-thumb{transform:translateX(-22px);}
+.save-badge{background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-right:6px;}
+.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+.plan-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;position:relative;transition:all .2s;cursor:pointer;}
+.plan-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.3);}
+.plan-card.popular{border-color:#60a5fa;box-shadow:0 0 0 1px #60a5fa,0 8px 28px var(--glow);}
+.popular-tag{position:absolute;top:-11px;right:50%;transform:translateX(50%);background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;font-size:.68rem;font-weight:700;padding:3px 14px;border-radius:20px;white-space:nowrap;}
+.plan-icon{font-size:1.8rem;margin-bottom:10px;}
+.plan-name{font-size:1rem;font-weight:900;margin-bottom:4px;}
+.plan-desc{font-size:.74rem;color:var(--muted);margin-bottom:16px;line-height:1.5;}
+.plan-price{margin-bottom:16px;}
+.plan-price .amount{font-size:2rem;font-weight:900;color:#60a5fa;}
+.plan-price .curr{font-size:.85rem;color:var(--muted);margin-right:3px;}
+.plan-price .per{font-size:.75rem;color:var(--muted);}
+.plan-price .old-price{font-size:.8rem;color:var(--muted);text-decoration:line-through;display:block;margin-bottom:2px;}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:20px;}
+.plan-features li{font-size:.78rem;display:flex;align-items:center;gap:7px;color:var(--soft);}
+.plan-features li .fi-ok{color:#34d399;font-size:.9rem;}
+.plan-features li .fi-no{color:var(--muted);font-size:.9rem;}
+.plan-features li.locked{color:var(--muted);}
+.plan-btn{width:100%;padding:11px;border:none;border-radius:11px;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.plan-btn.free{background:var(--surface);border:1px solid var(--border);color:var(--muted);}
+.plan-btn.free:hover{border-color:var(--blue);color:var(--text);}
+.plan-btn.pro{background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;}
+.plan-btn.pro:hover{transform:translateY(-1px);box-shadow:0 6px 20px var(--glow);}
+.plan-btn.teacher{background:linear-gradient(135deg,#8b5cf6,#3b82f6);color:#fff;}
+.plan-btn.teacher:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(139,92,246,.3);}
+.sub-note{text-align:center;font-size:.74rem;color:var(--muted);}
+
+/* subscription status badge in nav */
+.sub-status{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-right:2px;}
+.sub-status.pro{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.25);}
+.sub-status.teacher-sub{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.25);}
+.sub-status.free{background:rgba(75,99,128,.1);color:var(--muted);border:1px solid var(--border);}
+
+/* paywall overlay */
+.paywall{position:fixed;inset:0;background:rgba(5,8,15,.88);backdrop-filter:blur(12px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;}
+.paywall.on{display:flex;}
+.paywall-box{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:32px 26px;text-align:center;max-width:380px;width:100%;}
+.paywall-em{font-size:2.5rem;margin-bottom:12px;}
+.paywall-title{font-size:1.2rem;font-weight:900;margin-bottom:8px;}
+.paywall-sub{color:var(--muted);font-size:.85rem;margin-bottom:22px;line-height:1.6;}
+.paywall-actions{display:flex;gap:9px;flex-direction:column;}
+/* ══ PAYMENT MODAL ══ */
+.wallet-opt{display:flex;align-items:center;gap:9px;padding:13px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.84rem;font-weight:700;color:var(--muted);transition:all .18s;}
+.wallet-opt:hover{border-color:var(--blue);color:var(--text);}
+.wallet-opt.on{border-color:#60a5fa;background:rgba(59,130,246,.1);color:#93c5fd;}
+.pay-step{width:28px;height:28px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.76rem;font-weight:900;color:var(--muted);flex-shrink:0;transition:all .3s;}
+.pay-step.on{background:var(--blue);color:#fff;}
+.pay-step.done{background:var(--green);color:#fff;}
+/* ══ STAGE BUTTONS ══ */
+.stage-btn{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 8px;text-align:center;cursor:pointer;transition:all .2s;}
+.stage-btn:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px var(--glow);}
+.stage-btn.on{border-color:#60a5fa;background:rgba(59,130,246,.09);box-shadow:0 0 0 1px #60a5fa;}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="loading"><div class="spin"></div><p id="loading-msg">جاري التحميل...</p></div>
+<div class="toast" id="toast"></div>
+
+<!-- PAYMENT MODAL -->
+<div class="paywall" id="pay-modal">
+  <div class="paywall-box" style="max-width:440px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-size:1.1rem;font-weight:900;" id="pay-modal-title">اشتراك طالب Pro</div>
+      <button onclick="closePayModal()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:.8rem;color:var(--muted);">✕</button>
+    </div>
+
+    <!-- Steps indicator -->
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:22px;">
+      <div class="pay-step on" id="ps-1">١</div>
+      <div style="flex:1;height:2px;background:var(--border);border-radius:2px;"><div id="ps-line" style="width:0%;height:100%;background:var(--blue);border-radius:2px;transition:width .4s;"></div></div>
+      <div class="pay-step" id="ps-2">٢</div>
+      <div style="flex:1;height:2px;background:var(--border);border-radius:2px;"></div>
+      <div class="pay-step" id="ps-3">٣</div>
+    </div>
+
+    <!-- Step 1: Choose wallet -->
+    <div id="pay-step-1">
+      <div style="font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">اختار طريقة الدفع</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px;">
+        <div class="wallet-opt" onclick="selectWallet(this,'etisalat')" data-w="etisalat">
+          <span style="font-size:1.4rem;">🟢</span>
+          <span>اتصالات كاش</span>
+        </div>
+        <div class="wallet-opt" onclick="selectWallet(this,'vodafone')" data-w="vodafone">
+          <span style="font-size:1.4rem;">📱</span>
+          <span>Vodafone Cash</span>
+        </div>
+        <div class="wallet-opt" onclick="selectWallet(this,'orange')" data-w="orange">
+          <span style="font-size:1.4rem;">🟠</span>
+          <span>Orange Cash</span>
+        </div>
+        <div class="wallet-opt" onclick="selectWallet(this,'we')" data-w="we">
+          <span style="font-size:1.4rem;">🔵</span>
+          <span>WE Pay</span>
+        </div>
+        <div class="wallet-opt" onclick="selectWallet(this,'instapay')" data-w="instapay" style="grid-column:1/-1;">
+          <span style="font-size:1.4rem;">⚡</span>
+          <span>InstaPay</span>
+        </div>
+      </div>
+      <button class="big-btn" id="step1-next" onclick="goPayStep(2)" disabled style="opacity:.4;">التالي ←</button>
+    </div>
+
+    <!-- Step 2: Payment details -->
+    <div id="pay-step-2" style="display:none;">
+      <div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:10px;">تفاصيل التحويل</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:.82rem;color:var(--soft);">رقم المحفظة</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:.95rem;font-weight:900;color:#f1f5f9;" id="wallet-number">01XXXXXXXXX</span>
+            <button onclick="copyWalletNum()" style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:.7rem;color:var(--muted);">نسخ</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:.82rem;color:var(--soft);">الاسم</span>
+          <span style="font-size:.88rem;font-weight:700;color:#f1f5f9;">أدهم الخبيري</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:.82rem;color:var(--soft);">المبلغ</span>
+          <span style="font-size:1.1rem;font-weight:900;color:#fbbf24;" id="pay-amount-display">150 جنيه</span>
+        </div>
+      </div>
+      <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:13px 15px;margin-bottom:16px;font-size:.8rem;line-height:1.7;color:#fcd34d;">
+        ⚠️ <strong>مهم:</strong> في خانة "البيان" أو "الملاحظة" اكتب إيميلك المسجل في المنصة عشان نقدر نفعّل حسابك بسرعة.
+      </div>
+      <button class="big-btn" onclick="goPayStep(3)">دفعت — التالي ←</button>
+      <button onclick="goPayStep(1)" style="width:100%;margin-top:8px;background:transparent;border:none;color:var(--muted);font-family:'Cairo',sans-serif;font-size:.78rem;cursor:pointer;">← رجوع</button>
+    </div>
+
+    <!-- Step 3: Send screenshot -->
+    <div id="pay-step-3" style="display:none;">
+      <div style="text-align:center;margin-bottom:18px;">
+        <div style="font-size:2.2rem;margin-bottom:8px;">📲</div>
+        <div style="font-size:.95rem;font-weight:700;margin-bottom:6px;">ابعتلنا صورة التأكيد</div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.6;">بعد ما تحول المبلغ، ابعت screenshot لإيصال التحويل على واتساب وهنفعّل حسابك خلال ساعة</div>
+      </div>
+      <a id="whatsapp-link" href="#" target="_blank" style="text-decoration:none;">
+        <div style="background:linear-gradient(135deg,#25D366,#128C7E);border-radius:14px;padding:16px;display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px;cursor:pointer;transition:all .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          <span style="font-size:1.6rem;">💬</span>
+          <div>
+            <div style="font-size:.95rem;font-weight:900;color:#fff;">ابعت على واتساب</div>
+            <div style="font-size:.72rem;color:rgba(255,255,255,.8);" id="wa-number-display">01XXXXXXXXX</div>
+          </div>
+        </div>
+      </a>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 15px;font-size:.78rem;color:var(--muted);line-height:1.7;margin-bottom:16px;">
+        📋 <strong style="color:var(--soft);">الرسالة المقترحة:</strong><br>
+        <span id="wa-msg-preview" style="color:#93c5fd;"></span>
+      </div>
+      <button class="big-btn" style="background:var(--surface);border:1px solid var(--border);color:var(--text);" onclick="closePayModal();toast('شكراً! هنفعّل حسابك بعد التحقق من الدفع 🎉','ok')">تمام، انتظر التفعيل ✅</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUIT MODAL -->
+<div class="paywall" id="quit-modal">
+  <div class="paywall-box" style="max-width:340px;text-align:center;">
+    <div style="font-size:2rem;margin-bottom:12px;">⚠️</div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:8px;">تأكيد إنهاء الامتحان</div>
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:22px;">لو خرجت دلوقتي هيتم احتساب الأسئلة الجاي كإجابات غلط</div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('quit-modal').classList.remove('on')">تراجع</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="document.getElementById('quit-modal').classList.remove('on');clearInterval(Q.tmInt);goBNav('home')">إنهاء ✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYWALL OVERLAY -->
+<div class="paywall" id="paywall">
+  <div class="paywall-box">
+    <div class="paywall-em">🔒</div>
+    <div class="paywall-title" id="paywall-title">الميزة دي للمشتركين فقط</div>
+    <div class="paywall-sub" id="paywall-sub">اشترك في خطة Pro عشان تقدر تستخدم هذه الميزة وكل المزايا المتميزة</div>
+    <div class="paywall-actions">
+      <button class="big-btn" onclick="closePaywall();goBNav('pricing')">🚀 اشترك دلوقتي</button>
+      <button class="btn btn-ghost" style="width:100%;" onclick="closePaywall()">مش دلوقتي</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ AUTH ════ -->
+<div class="screen on" id="screen-auth">
+  <div class="auth-wrap">
+    <div class="auth-logo">
+      <h1><span style="-webkit-text-fill-color:var(--soft);color:var(--soft);font-weight:300;font-size:1.6rem;letter-spacing:0;">منصة</span> ذاكر</h1>
+      <p>المنصة التعليمية رقم ١ في مصر والشرق الأوسط</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab on" onclick="switchAuth('login')">تسجيل الدخول</button>
+      <button class="auth-tab" onclick="switchAuth('register')">حساب جديد</button>
+    </div>
+    <div class="auth-card">
+      <div id="login-form">
+        <div class="fg"><label>الاسم أو الإيميل</label><input class="fi" id="li-name" placeholder="أدخل اسمك أو إيميلك"/></div>
+        <div class="fg"><label>كلمة المرور</label><input class="fi" id="li-pass" type="password" placeholder="كلمة المرور"/></div>
+        <button class="big-btn" onclick="doLogin()">دخول ←</button>
+        <div class="auth-err" id="li-err"></div>
+        <!-- Divider -->
+        <div style="display:flex;align-items:center;gap:10px;margin:16px 0;">
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+          <span style="font-size:.72rem;color:var(--muted);font-weight:600;">أو</span>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+        <!-- Guest button -->
+        <button onclick="loginAsGuest()" style="
+          width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);
+          background:var(--surface);font-family:'Cairo',sans-serif;font-size:.92rem;
+          font-weight:700;cursor:pointer;color:var(--soft);transition:all .2s;
+          display:flex;align-items:center;justify-content:center;gap:8px;">
+          👤 دخول كزائر — بدون حساب
+        </button>
+        <div style="text-align:center;margin-top:8px;font-size:.7rem;color:var(--muted);">
+          لن يتم حفظ تقدمك أو نقاطك
+        </div>
+      </div>
+      <div id="register-form" style="display:none;">
+        <div class="fg"><label>الاسم الكامل</label><input class="fi" id="rg-name" placeholder="اسمك بالكامل"/></div>
+        <div class="fg"><label>البريد الإلكتروني</label><input class="fi" id="rg-email" placeholder="example@email.com"/></div>
+        <div class="fg"><label>كلمة المرور</label><input class="fi" id="rg-pass" type="password" placeholder="كلمة مرور قوية"/></div>
+        <div class="fg" style="margin-bottom:0;"><label>أنت...</label></div>
+        <div class="role-row">
+          <button class="role-btn on" data-role="student" onclick="pickRole(this)"><span class="ri">🎓</span>طالب</button>
+          <button class="role-btn" data-role="teacher" onclick="pickRole(this)"><span class="ri">👨‍🏫</span>مدرس</button>
+        </div>
+        <button class="big-btn" onclick="doRegister()">إنشاء الحساب</button>
+        <div class="auth-err" id="rg-err"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ APP ════ -->
+<div class="screen" id="screen-app">
+  <nav>
+    <div class="nav-logo"><span style="-webkit-text-fill-color:var(--soft);color:var(--soft);font-weight:300;">منصة</span> ذاكر</div>
+    <div class="nav-tabs" id="nav-tabs">
+      <button class="ntab on" onclick="goPage('home',this)">🏠 الرئيسية</button>
+      <button class="ntab" onclick="goPage('qbank',this)">📝 بنك الأسئلة</button>
+      <button class="ntab" onclick="goPage('flashcards',this)">🃏 Flashcards</button>
+      <button class="ntab" onclick="goPage('leaderboard',this)">🏆 المتصدرين</button>
+      <button class="ntab" onclick="goPage('progress',this)">📊 تقدمي</button>
+      <button class="ntab" onclick="goPage('pricing',this)" style="color:#fbbf24;">💎 الاشتراك</button>
+    </div>
+    <div class="nav-right">
+      <div class="user-pill">
+        <div class="avatar" id="nav-av">؟</div>
+        <span class="nav-name" id="nav-name-el">—</span>
+        <span class="sub-status free" id="nav-sub-badge">مجاني</span>
+        <span class="nav-pts" id="nav-pts">0 ⭐</span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">خروج</button>
+    </div>
+  </nav>
+
+  <!-- Guest Banner -->
+  <div id="guest-banner" style="display:none;background:rgba(245,158,11,.08);border-bottom:1px solid rgba(245,158,11,.2);padding:8px 16px;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;position:relative;z-index:10;">
+    <div style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:#fbbf24;font-weight:600;">
+      <span>👤</span> أنت تتصفح كزائر — لن يتم حفظ تقدمك
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="doLogout();setTimeout(()=>switchAuth('register'),100);" style="background:linear-gradient(135deg,#3b82f6,#06b6d4);border:none;border-radius:8px;padding:5px 14px;font-family:'Cairo',sans-serif;font-size:.76rem;font-weight:700;color:#fff;cursor:pointer;">إنشاء حساب مجاني</button>
+      <button onclick="doLogout();" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-family:'Cairo',sans-serif;font-size:.76rem;color:var(--muted);cursor:pointer;">تسجيل دخول</button>
+    </div>
+  </div>
+
+  <div class="bottom-nav" id="bottom-nav">
+    <button class="bnav-btn on" id="bn-home" onclick="goBNav('home')"><span class="bi">🏠</span><span class="bl">الرئيسية</span></button>
+    <button class="bnav-btn" id="bn-qbank" onclick="goBNav('qbank')"><span class="bi">📝</span><span class="bl">بنك الأسئلة</span></button>
+    <button class="bnav-btn" id="bn-flashcards" onclick="goBNav('flashcards')"><span class="bi">🃏</span><span class="bl">Flashcards</span></button>
+    <button class="bnav-btn" id="bn-leaderboard" onclick="goBNav('leaderboard')"><span class="bi">🏆</span><span class="bl">المتصدرين</span></button>
+    <button class="bnav-btn" id="bn-progress" onclick="goBNav('progress')"><span class="bi">📊</span><span class="bl">تقدمي</span></button>
+    <button class="bnav-btn" onclick="goBNav('pricing')"><span class="bi">💎</span><span class="bl" style="color:#fbbf24;">Pro</span></button>
+  </div>
+
+  <!-- ── HOME ── -->
+  <div class="page on" id="page-home">
+    <div class="hero">
+      <h2>أهلاً <span class="gr" id="welcome-name">—</span> 👋</h2>
+      <p>اختار المرحلة والمادة وابدأ امتحان تدريبي</p>
+    </div>
+    <div class="stat-strip">
+      <div class="sc"><div class="v v-gold" id="hs-pts">0</div><div class="l">نقطة ⭐</div></div>
+      <div class="sc"><div class="v v-blue" id="hs-exams">0</div><div class="l">امتحان</div></div>
+      <div class="sc"><div class="v v-green" id="hs-avg">—</div><div class="l">متوسطي</div></div>
+      <div class="sc"><div class="v v-purple" id="hs-badges">0</div><div class="l">شارة 🏅</div></div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;">
+
+      <!-- Stage selector -->
+      <div class="stitle">اختار نوع مدرستك والمرحلة</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px;" id="stage-grid">
+        <div class="stage-btn on" data-stage="ثانوي" onclick="selectStage(this)">
+          <div style="font-size:1.3rem;margin-bottom:3px;">🎓</div>
+          <div style="font-size:.78rem;font-weight:700;">ثانوي عربي</div>
+          <div style="font-size:.6rem;color:var(--muted);">أول → تالت</div>
+        </div>
+        <div class="stage-btn" data-stage="تجريبي ثانوي" onclick="selectStage(this)">
+          <div style="font-size:1.3rem;margin-bottom:3px;">🔬</div>
+          <div style="font-size:.78rem;font-weight:700;">تجريبي ثانوي</div>
+          <div style="font-size:.6rem;color:var(--muted);">بالإنجليزي</div>
+        </div>
+        <div class="stage-btn" data-stage="إعدادي" onclick="selectStage(this)">
+          <div style="font-size:1.3rem;margin-bottom:3px;">📚</div>
+          <div style="font-size:.78rem;font-weight:700;">إعدادي عربي</div>
+          <div style="font-size:.6rem;color:var(--muted);">أول → تالت</div>
+        </div>
+        <div class="stage-btn" data-stage="تجريبي إعدادي" onclick="selectStage(this)">
+          <div style="font-size:1.3rem;margin-bottom:3px;">🔬</div>
+          <div style="font-size:.78rem;font-weight:700;">تجريبي إعدادي</div>
+          <div style="font-size:.6rem;color:var(--muted);">بالإنجليزي</div>
+        </div>
+        <div class="stage-btn" data-stage="ابتدائي" onclick="selectStage(this)">
+          <div style="font-size:1.3rem;margin-bottom:3px;">✏️</div>
+          <div style="font-size:.78rem;font-weight:700;">ابتدائي عربي</div>
+          <div style="font-size:.6rem;color:var(--muted);">رابع → سادس</div>
+        </div>
+        <div class="stage-btn" data-stage="تجريبي ابتدائي" onclick="selectStage(this)">
+          <div style="font-size:1.3rem;margin-bottom:3px;">🔬</div>
+          <div style="font-size:.78rem;font-weight:700;">تجريبي ابتدائي</div>
+          <div style="font-size:.6rem;color:var(--muted);">بالإنجليزي</div>
+        </div>
+      </div>
+
+      <!-- Subject grid — ثانوي -->
+      <div class="stitle">اختار المادة</div>
+      <div class="subj-grid" id="subj-grid">
+        <!-- ثانوي subjects (default) -->
+        <div class="sj" data-s="الرياضيات"><span class="ic">📐</span><div class="nm">رياضيات</div><div class="bs" id="bst-الرياضيات">—</div></div>
+        <div class="sj" data-s="الفيزياء"><span class="ic">⚡</span><div class="nm">فيزياء</div><div class="bs" id="bst-الفيزياء">—</div></div>
+        <div class="sj" data-s="الكيمياء"><span class="ic">🧪</span><div class="nm">كيمياء</div><div class="bs" id="bst-الكيمياء">—</div></div>
+        <div class="sj" data-s="الأحياء"><span class="ic">🧬</span><div class="nm">أحياء</div><div class="bs" id="bst-الأحياء">—</div></div>
+        <div class="sj" data-s="اللغة العربية"><span class="ic">📖</span><div class="nm">عربي</div><div class="bs" id="bst-اللغة العربية">—</div></div>
+        <div class="sj" data-s="اللغة الإنجليزية"><span class="ic">🔤</span><div class="nm">إنجليزي</div><div class="bs" id="bst-اللغة الإنجليزية">—</div></div>
+        <div class="sj" data-s="التاريخ"><span class="ic">🏛️</span><div class="nm">تاريخ</div><div class="bs" id="bst-التاريخ">—</div></div>
+        <div class="sj" data-s="الجغرافيا"><span class="ic">🗺️</span><div class="nm">جغرافيا</div><div class="bs" id="bst-الجغرافيا">—</div></div>
+        <div class="sj" data-s="الفلسفة"><span class="ic">🧠</span><div class="nm">فلسفة</div><div class="bs" id="bst-الفلسفة">—</div></div>
+        <div class="sj" data-s="علم الاجتماع"><span class="ic">💬</span><div class="nm">اجتماع</div><div class="bs" id="bst-علم الاجتماع">—</div></div>
+      </div>
+
+      <div class="topic-row"><label>موضوع معين (اختياري)</label>
+        <input class="topic-in" id="topic-in" placeholder="مثال: التفاضل، قوانين نيوتن، النحو..."/></div>
+      <div class="settings-row">
+        <div class="fld"><label>عدد الأسئلة</label>
+          <select id="num-q"><option value="5">5 أسئلة</option><option value="10" selected>10 أسئلة</option><option value="15">15 سؤال</option><option value="20">20 سؤال</option></select></div>
+        <div class="fld"><label>الصعوبة</label>
+          <select id="diff"><option value="سهل">سهل 🟢</option><option value="متوسط" selected>متوسط 🟡</option><option value="صعب">صعب 🔴</option><option value="مختلط">مختلط 🎲</option></select></div>
+        <div class="fld"><label>المؤقت الزمني</label>
+          <select id="timer-opt"><option value="0">بدون مؤقت</option><option value="30">30 ثانية/سؤال</option><option value="60" selected>دقيقة/سؤال</option><option value="120">دقيقتين/سؤال</option></select></div>
+      </div>
+      <button class="big-btn" onclick="startExam()">🚀 ابدأ الامتحان</button>
+      <div style="text-align:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+        <div style="display:inline-flex;align-items:center;gap:8px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);box-shadow:0 0 7px rgba(59,130,246,.5);animation:pulse-dot 2s ease infinite;"></div>
+          <span style="font-size:.7rem;color:var(--muted);font-weight:600;">تصميم وبرمجة</span>
+          <span style="font-size:.8rem;font-weight:700;background:linear-gradient(135deg,#60a5fa,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">أدهم الخبيري</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── QUIZ ── -->
+  <div class="page" id="page-quiz">
+    <div class="quiz-topbar">
+      <div class="timer-box"><span>⏱</span><span class="t-num" id="t-num">—</span></div>
+      <div class="qinfo"><div class="qinfo-lbl">امتحان تدريبي</div><div class="qinfo-sub" id="quiz-subj">—</div></div>
+      <div class="live-sc"><span class="ok" id="sc-live">0</span><span class="sep">/</span><span id="sc-tot">0</span></div>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="dots" id="dots"></div>
+    <div id="q-wrap"></div>
+    <div class="quiz-nav">
+      <button class="btn btn-ghost" onclick="confirmQuit()">✕ إنهاء</button>
+      <button class="btn btn-primary" id="next-btn" onclick="nextQ()" disabled>التالي ←</button>
+    </div>
+  </div>
+
+  <!-- ── RESULTS ── -->
+  <div class="page" id="page-results">
+    <div class="res-hero">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 120 120" width="120" height="120">
+          <circle class="ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="ring-fg" id="ring-fg" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+        </svg>
+        <div class="ring-txt"><div class="big" id="ring-pct">0%</div><div class="sm">النتيجة</div></div>
+      </div>
+      <div class="res-title" id="res-title">—</div>
+      <div class="res-sub" id="res-sub">—</div>
+      <div class="res-stats">
+        <div class="rs"><div class="n" style="color:#34d399" id="r-ok">0</div><div class="l">صح ✅</div></div>
+        <div class="rs"><div class="n" style="color:#f87171" id="r-fail">0</div><div class="l">غلط ❌</div></div>
+        <div class="rs"><div class="n" style="color:#fbbf24" id="r-time">—</div><div class="l">الوقت</div></div>
+      </div>
+      <div class="pts-earned" id="pts-earned">⭐ +0 نقطة</div>
+      <div class="res-actions">
+        <button class="btn btn-ghost" onclick="reviewMode()">مراجعة الإجابات</button>
+        <button class="btn btn-primary" onclick="goBNav('home')">امتحان جديد 🎯</button>
+      </div>
+    </div>
+    <div class="bkdn"><div class="bkdn-title">تحليل الأداء</div><div id="bkdn-bars"></div></div>
+    <div class="badges-section" id="new-badges-section" style="display:none;">
+      <div class="bkdn-title">🎉 شارات جديدة حصلت عليها!</div>
+      <div class="badges-grid" id="new-badges-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── QUESTION BANK ── -->
+  <div class="page" id="page-qbank">
+    <div class="hero" style="padding:10px 0 20px;">
+      <h2 style="font-size:1.6rem;">بنك الأسئلة <span class="gr">📝</span></h2>
+      <p>أسئلة من مناهج الثانوية العامة المصرية — علمي وأدبي</p>
+    </div>
+
+    <!-- Filters row 1: Section -->
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+      <button class="qb-filter on" data-section="all" onclick="filterSection(this)">🌍 الكل</button>
+      <button class="qb-filter" data-section="علمي" onclick="filterSection(this)">🔬 ثانوي علمي</button>
+      <button class="qb-filter" data-section="أدبي" onclick="filterSection(this)">📚 ثانوي أدبي</button>
+      <button class="qb-filter" data-section="مشترك" onclick="filterSection(this)">🤝 ثانوي مشترك</button>
+      <button class="qb-filter" data-section="تجريبي" onclick="filterSection(this)">🏫 تجريبي لغات</button>
+      <button class="qb-filter" data-section="إعدادي" onclick="filterSection(this)">📖 إعدادي</button>
+      <button class="qb-filter" data-section="ابتدائي" onclick="filterSection(this)">🎒 ابتدائي</button>
+    </div>
+
+    <!-- Filters row 2: Grade -->
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+      <button class="qb-filter on" data-grade="all" onclick="filterGrade(this)">كل الصفوف</button>
+      <button class="qb-filter" data-grade="1" onclick="filterGrade(this)">أول</button>
+      <button class="qb-filter" data-grade="2" onclick="filterGrade(this)">تاني</button>
+      <button class="qb-filter" data-grade="3" onclick="filterGrade(this)">تالت</button>
+      <button class="qb-filter" data-grade="4" onclick="filterGrade(this)">رابع</button>
+      <button class="qb-filter" data-grade="5" onclick="filterGrade(this)">خامس</button>
+      <button class="qb-filter" data-grade="6" onclick="filterGrade(this)">سادس</button>
+    </div>
+
+    <!-- Filters row 3: Subject -->
+    <div class="qbank-filters" id="qbank-filters" style="margin-bottom:14px;">
+      <button class="qb-filter on" data-f="all">كل المواد</button>
+      <!-- ثانوي عربي -->
+      <button class="qb-filter" data-f="الرياضيات">📐 رياضيات ثانوي</button>
+      <button class="qb-filter" data-f="الفيزياء">⚡ فيزياء</button>
+      <button class="qb-filter" data-f="الكيمياء">🧪 كيمياء</button>
+      <button class="qb-filter" data-f="الأحياء">🧬 أحياء</button>
+      <button class="qb-filter" data-f="اللغة العربية">📖 عربي ثانوي</button>
+      <button class="qb-filter" data-f="اللغة الإنجليزية">🔤 إنجليزي ثانوي</button>
+      <button class="qb-filter" data-f="التاريخ">🏛️ تاريخ ثانوي</button>
+      <button class="qb-filter" data-f="الجغرافيا">🗺️ جغرافيا ثانوي</button>
+      <button class="qb-filter" data-f="الفلسفة">🧠 فلسفة</button>
+      <!-- تجريبي لغات -->
+      <button class="qb-filter" data-f="Mathematics (Exp)">📐 Mathematics</button>
+      <button class="qb-filter" data-f="Physics (Exp)">⚡ Physics</button>
+      <button class="qb-filter" data-f="Chemistry (Exp)">🧪 Chemistry</button>
+      <button class="qb-filter" data-f="Biology (Exp)">🧬 Biology</button>
+      <button class="qb-filter" data-f="History (Exp)">🏛️ History</button>
+      <button class="qb-filter" data-f="Geography (Exp)">🗺️ Geography</button>
+      <button class="qb-filter" data-f="Philosophy (Exp)">🧠 Philosophy</button>
+      <button class="qb-filter" data-f="English Language">🔤 English (Exp)</button>
+      <!-- إعدادي -->
+      <button class="qb-filter" data-f="رياضيات إعدادي">📐 رياضيات إعدادي</button>
+      <button class="qb-filter" data-f="علوم إعدادي">🔬 علوم إعدادي</button>
+      <button class="qb-filter" data-f="عربي إعدادي">📖 عربي إعدادي</button>
+      <button class="qb-filter" data-f="إنجليزي إعدادي">🔤 إنجليزي إعدادي</button>
+      <button class="qb-filter" data-f="تاريخ إعدادي">🏛️ تاريخ إعدادي</button>
+      <button class="qb-filter" data-f="جغرافيا إعدادي">🗺️ جغرافيا إعدادي</button>
+      <button class="qb-filter" data-f="دراسات اجتماعية">💬 دراسات إعدادي</button>
+      <!-- ابتدائي -->
+      <button class="qb-filter" data-f="رياضيات ابتدائي">📐 رياضيات ابتدائي</button>
+      <button class="qb-filter" data-f="علوم ابتدائي">🔬 علوم ابتدائي</button>
+      <button class="qb-filter" data-f="عربي ابتدائي">📖 عربي ابتدائي</button>
+      <button class="qb-filter" data-f="إنجليزي ابتدائي">🔤 إنجليزي ابتدائي</button>
+      <button class="qb-filter" data-f="دراسات ابتدائي">🗺️ دراسات ابتدائي</button>
+      <button class="qb-filter" data-f="تربية دينية">☪️ دين ابتدائي</button>
+    </div>
+
+    <div style="display:flex;gap:9px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+      <button class="big-btn" style="max-width:200px;" onclick="loadQBank()">🔄 تحميل أسئلة AI</button>
+      <button class="btn btn-ghost" onclick="loadBuiltinQBank()">📚 أسئلة المنهج</button>
+      <span style="font-size:.76rem;color:var(--muted);" id="qbank-count"></span>
+    </div>
+    <div class="qbank-list" id="qbank-list">
+      <div style="text-align:center;color:var(--muted);padding:30px;font-size:.88rem;">اختار مادة أو اضغط "أسئلة المنهج" 📚</div>
+    </div>
+  </div>
+
+  <!-- ── FLASHCARDS ── -->
+  <div class="page" id="page-flashcards">
+    <div class="hero" style="padding:10px 0 20px;">
+      <h2 style="font-size:1.6rem;">بطاقات المذاكرة <span class="gr">🃏</span></h2>
+      <p>اضغط على الكارت عشان تشوف الإجابة</p>
+    </div>
+    <div class="stitle">اختار المادة</div>
+    <!-- Stage tabs for flashcards -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+      <button class="fc-tag on" data-stage-fc="ثانوي" onclick="switchFcStage(this)">🎓 ثانوي عربي</button>
+      <button class="fc-tag" data-stage-fc="تجريبي" onclick="switchFcStage(this)">🔬 تجريبي</button>
+      <button class="fc-tag" data-stage-fc="إعدادي" onclick="switchFcStage(this)">📚 إعدادي</button>
+      <button class="fc-tag" data-stage-fc="ابتدائي" onclick="switchFcStage(this)">✏️ ابتدائي</button>
+    </div>
+    <div class="fc-tags" id="fc-tags">
+      <button class="fc-tag on" data-s="الرياضيات">📐 رياضيات</button>
+      <button class="fc-tag" data-s="الفيزياء">⚡ فيزياء</button>
+      <button class="fc-tag" data-s="الكيمياء">🧪 كيمياء</button>
+      <button class="fc-tag" data-s="الأحياء">🧬 أحياء</button>
+      <button class="fc-tag" data-s="اللغة العربية">📖 عربي</button>
+      <button class="fc-tag" data-s="التاريخ">🏛️ تاريخ</button>
+      <button class="fc-tag" data-s="الجغرافيا">🗺️ جغرافيا</button>
+      <button class="fc-tag" data-s="الفلسفة">🧠 فلسفة</button>
+    </div>
+    <button class="big-btn" style="max-width:260px;display:block;margin:0 auto 20px;" onclick="startFC()">🃏 ابدأ المذاكرة</button>
+    <div class="fc-arena" id="fc-arena">
+      <div class="fc-prog" id="fc-prog">بطاقة 1 من 10</div>
+      <div class="flip-wrap" onclick="flipCard()">
+        <div class="flip-inner" id="flip-inner">
+          <div class="flip-face flip-front"><div class="fc-hint">اضغط للإجابة 👆</div><div class="fc-q" id="fc-q">...</div></div>
+          <div class="flip-face flip-back"><div class="fc-em">💡</div><div class="fc-a" id="fc-a">...</div></div>
+        </div>
+      </div>
+      <div class="fc-btns">
+        <button class="fcb fcb-again" onclick="fcRate('again')">🔄 تاني</button>
+        <button class="fcb fcb-good" onclick="fcRate('good')">✅ عرفت</button>
+        <button class="fcb fcb-easy" onclick="fcRate('easy')">⭐ سهل</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LEADERBOARD ── -->
+  <div class="page" id="page-leaderboard">
+    <div class="hero" style="padding:10px 0 20px;">
+      <h2 style="font-size:1.6rem;">المتصدرين <span class="gr">🏆</span></h2>
+      <p>تنافس مع زملاءك واوصل للقمة</p>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;">
+      <div class="stitle">ترتيب النقاط</div>
+      <div class="lb-list" id="lb-list">
+        <div style="text-align:center;color:var(--muted);padding:20px;font-size:.88rem;">لسه مفيش طلاب مسجلين كفاية 🎯</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROGRESS ── -->
+  <div class="page" id="page-progress">
+    <div class="hero" style="padding:10px 0 20px;">
+      <h2 style="font-size:1.6rem;">تقدمي <span class="gr">📊</span></h2>
+      <p>تابع أداءك في كل المواد</p>
+    </div>
+    <div class="pg-grid">
+      <div class="pg-card"><div class="pg-num v-gold" id="pg-pts">0</div><div class="pg-lbl">نقطة ⭐</div></div>
+      <div class="pg-card"><div class="pg-num v-blue" id="pg-exams">0</div><div class="pg-lbl">امتحان</div></div>
+      <div class="pg-card"><div class="pg-num v-green" id="pg-avg">—</div><div class="pg-lbl">متوسط الدرجات</div></div>
+      <div class="pg-card"><div class="pg-num v-purple" id="pg-fc">0</div><div class="pg-lbl">Flashcard</div></div>
+      <div class="pg-card full">
+        <div class="bkdn-title" style="margin-bottom:14px;">شاراتي 🏅</div>
+        <div class="badges-grid" id="badges-grid"></div>
+      </div>
+      <div class="pg-card full">
+        <div class="bkdn-title" style="margin-bottom:14px;">أداء بالمادة</div>
+        <div class="subj-perf" id="subj-perf"><div style="color:var(--muted);font-size:.84rem;text-align:center;padding:14px;">لسه معملتش امتحانات 🎯</div></div>
+      </div>
+      <div class="pg-card full">
+        <div class="bkdn-title" style="margin-bottom:14px;">آخر الامتحانات</div>
+        <div class="hist-list" id="hist-list"><div style="color:var(--muted);font-size:.84rem;text-align:center;padding:14px;">لسه معملتش امتحانات 🎯</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TEACHER ── -->
+  <div class="page" id="page-teacher">
+    <div class="hero" style="padding:10px 0 20px;">
+      <h2 style="font-size:1.6rem;">لوحة المدرس <span class="gr">👨‍🏫</span></h2>
+      <p>تابع تقدم طلابك وأدائهم بالتفصيل</p>
+    </div>
+    <div class="t-tabs">
+      <button class="t-tab on" onclick="switchTeacherTab('overview',this)">📊 ملخص عام</button>
+      <button class="t-tab" onclick="switchTeacherTab('students',this)">👥 الطلاب</button>
+      <button class="t-tab" onclick="switchTeacherTab('weak',this)">⚠️ نقاط الضعف</button>
+    </div>
+    <div class="t-panel on" id="tp-overview">
+      <div class="t-summary-grid" id="t-summary"></div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;">
+        <div class="bkdn-title" style="margin-bottom:14px;">أداء المواد عبر جميع الطلاب</div>
+        <div class="subj-perf" id="t-subj-perf"></div>
+      </div>
+    </div>
+    <div class="t-panel" id="tp-students">
+      <div class="stu-grid" id="students-grid"></div>
+    </div>
+    <div class="t-panel" id="tp-weak">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;">
+        <div class="bkdn-title" style="margin-bottom:14px;">المواد الأكثر ضعفًا لدى الطلاب</div>
+        <div class="weak-list" id="weak-list"></div>
+      </div>
+    </div>
+  <!-- ── PRICING PAGE ── -->
+  <div class="page" id="page-pricing">
+    <div class="hero" style="padding:10px 0 20px;">
+      <h2 style="font-size:1.6rem;">الاشتراك <span class="gr">💎</span></h2>
+      <p>اختار الخطة المناسبة ليك وابدأ رحلة النجاح</p>
+    </div>
+
+    <!-- Current subscription status -->
+    <div id="current-sub-banner" style="margin-bottom:22px;"></div>
+
+    <!-- Billing toggle -->
+    <div class="billing-toggle" style="margin-bottom:26px;">
+      <span id="lbl-monthly" class="on">شهري</span>
+      <div class="toggle-track" id="billing-toggle" onclick="toggleBilling()">
+        <div class="toggle-thumb"></div>
+      </div>
+      <span id="lbl-yearly">سنوي <span class="save-badge">وفّر 33%</span></span>
+    </div>
+
+    <!-- Plans -->
+    <div class="plans-grid">
+      <!-- FREE -->
+      <div class="plan-card">
+        <div class="plan-icon">🆓</div>
+        <div class="plan-name">مجاني</div>
+        <div class="plan-desc">ابدأ مجاناً واختبر المنصة بدون أي التزام</div>
+        <div class="plan-price">
+          <span class="amount">0</span>
+          <span class="curr">جنيه</span>
+          <span class="per">/ دائماً</span>
+        </div>
+        <ul class="plan-features">
+          <li><span class="fi-ok">✓</span> 3 امتحانات يومياً</li>
+          <li><span class="fi-ok">✓</span> بنك الأسئلة (محدود)</li>
+          <li><span class="fi-ok">✓</span> الليدربورد</li>
+          <li><span class="fi-ok">✓</span> نظام النقاط</li>
+          <li class="locked"><span class="fi-no">✗</span> Flashcards غير محدودة</li>
+          <li class="locked"><span class="fi-no">✗</span> تحليل الأداء التفصيلي</li>
+          <li class="locked"><span class="fi-no">✗</span> امتحانات غير محدودة</li>
+        </ul>
+        <button class="plan-btn free" onclick="choosePlan('free')">ابدأ مجاناً</button>
+      </div>
+
+      <!-- PRO -->
+      <div class="plan-card popular">
+        <div class="popular-tag">⭐ الأكثر شيوعاً</div>
+        <div class="plan-icon">🚀</div>
+        <div class="plan-name">طالب Pro</div>
+        <div class="plan-desc">كل ما تحتاجه للتفوق والنجاح في الثانوية العامة</div>
+        <div class="plan-price" id="pro-price">
+          <span class="old-price" id="pro-old-price" style="display:none;"></span>
+          <span class="amount" id="pro-amount">150</span>
+          <span class="curr">جنيه</span>
+          <span class="per" id="pro-per">/ شهر</span>
+        </div>
+        <ul class="plan-features">
+          <li><span class="fi-ok">✓</span> امتحانات غير محدودة</li>
+          <li><span class="fi-ok">✓</span> Flashcards غير محدودة</li>
+          <li><span class="fi-ok">✓</span> بنك الأسئلة الكامل</li>
+          <li><span class="fi-ok">✓</span> تحليل أداء تفصيلي</li>
+          <li><span class="fi-ok">✓</span> نظام النقاط والشارات</li>
+          <li><span class="fi-ok">✓</span> دعم فني أولوية</li>
+        </ul>
+        <button class="plan-btn pro" onclick="openPayModal('pro')">اشترك دلوقتي</button>
+      </div>
+
+      <!-- TEACHER -->
+      <div class="plan-card">
+        <div class="plan-icon">👨‍🏫</div>
+        <div class="plan-name">مدرس Pro</div>
+        <div class="plan-desc">لوحة تحكم كاملة لمتابعة أداء طلابك بالتفصيل</div>
+        <div class="plan-price" id="teacher-price">
+          <span class="old-price" id="teacher-old-price" style="display:none;"></span>
+          <span class="amount" id="teacher-amount">150</span>
+          <span class="curr">جنيه</span>
+          <span class="per" id="teacher-per">/ شهر</span>
+        </div>
+        <ul class="plan-features">
+          <li><span class="fi-ok">✓</span> كل مميزات Pro</li>
+          <li><span class="fi-ok">✓</span> لوحة مدرس متكاملة</li>
+          <li><span class="fi-ok">✓</span> تقارير الطلاب التفصيلية</li>
+          <li><span class="fi-ok">✓</span> تحليل نقاط الضعف</li>
+          <li><span class="fi-ok">✓</span> حتى 50 طالب</li>
+          <li><span class="fi-ok">✓</span> دعم فني VIP</li>
+        </ul>
+        <button class="plan-btn teacher" onclick="openPayModal('teacher')">اشترك كمدرس</button>
+      </div>
+    </div>
+
+    <!-- Guarantees -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:1.4rem;margin-bottom:6px;">🔒</div>
+        <div style="font-size:.78rem;font-weight:700;margin-bottom:3px;">بيانات آمنة</div>
+        <div style="font-size:.68rem;color:var(--muted);">تشفير كامل لبياناتك</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:1.4rem;margin-bottom:6px;">↩️</div>
+        <div style="font-size:.78rem;font-weight:700;margin-bottom:3px;">إلغاء في أي وقت</div>
+        <div style="font-size:.68rem;color:var(--muted);">بدون أي رسوم إضافية</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:1.4rem;margin-bottom:6px;">💬</div>
+        <div style="font-size:.78rem;font-weight:700;margin-bottom:3px;">دعم فني ٢٤/٧</div>
+        <div style="font-size:.68rem;color:var(--muted);">فريق متخصص دايماً</div>
+      </div>
+    </div>
+
+    <div class="sub-note" style="margin-bottom:8px;">الأسعار بالجنيه المصري · شامل ضريبة القيمة المضافة</div>
+  </div>
+
+  <!-- ── ADMIN PAGE ── -->
+  <div class="page" id="page-admin">
+    <!-- Lock screen -->
+    <div id="admin-lock">
+      <div class="hero" style="padding:20px 0 28px;">
+        <div style="font-size:2.5rem;margin-bottom:10px;">🔐</div>
+        <h2 style="font-size:1.4rem;">لوحة الأدمن</h2>
+        <p>أدخل الرقم السري للدخول</p>
+      </div>
+      <div style="max-width:320px;margin:0 auto;">
+        <div class="fg" style="margin-bottom:14px;">
+          <label>الرقم السري</label>
+          <input class="fi" id="admin-pin" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')checkAdminPin()"/>
+        </div>
+        <button class="big-btn" onclick="checkAdminPin()">دخول</button>
+        <div style="display:none;color:#fca5a5;font-size:.82rem;text-align:center;margin-top:10px;" id="pin-err">رقم سري غلط</div>
+      </div>
+    </div>
+
+    <!-- Admin dashboard -->
+    <div id="admin-dash" style="display:none;">
+      <div class="hero" style="padding:10px 0 20px;">
+        <h2 style="font-size:1.5rem;">لوحة الأدمن <span class="gr">⚙️</span></h2>
+        <p>تفعيل وإدارة اشتراكات المستخدمين</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-strip" style="margin-bottom:22px;">
+        <div class="sc"><div class="v v-blue" id="adm-total">0</div><div class="l">إجمالي المستخدمين</div></div>
+        <div class="sc"><div class="v v-gold" id="adm-pro">0</div><div class="l">مشتركين Pro</div></div>
+        <div class="sc"><div class="v v-green" id="adm-teacher">0</div><div class="l">مدرسين Pro</div></div>
+        <div class="sc"><div class="v v-purple" id="adm-free">0</div><div class="l">مجانيين</div></div>
+      </div>
+
+      <!-- Activate subscription -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:16px;">
+        <div class="stitle">تفعيل اشتراك مستخدم</div>
+        <div class="fg" style="margin-bottom:12px;">
+          <label>إيميل المستخدم</label>
+          <input class="fi" id="adm-email" placeholder="example@email.com" oninput="searchUser()"/>
+        </div>
+        <!-- User preview -->
+        <div id="adm-user-preview" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div class="stu-av" id="adm-uav">؟</div>
+            <div>
+              <div style="font-weight:700;font-size:.9rem;" id="adm-uname">—</div>
+              <div style="font-size:.72rem;color:var(--muted);" id="adm-uemail">—</div>
+            </div>
+            <div style="margin-right:auto;">
+              <span id="adm-ucurrent" class="sub-status free">مجاني</span>
+            </div>
+          </div>
+          <div style="font-size:.75rem;color:var(--muted);" id="adm-uexpiry"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:14px;">
+          <div class="fld">
+            <label>الخطة</label>
+            <select class="fi" id="adm-plan" style="padding:10px 12px;">
+              <option value="pro">طالب Pro 🚀</option>
+              <option value="teacher">مدرس Pro 👨‍🏫</option>
+              <option value="free">مجاني</option>
+            </select>
+          </div>
+          <div class="fld">
+            <label>نوع الاشتراك</label>
+            <select class="fi" id="adm-billing" style="padding:10px 12px;">
+              <option value="monthly">شهري</option>
+              <option value="yearly">سنوي</option>
+            </select>
+          </div>
+          <div class="fld">
+            <label>مدة إضافية</label>
+            <select class="fi" id="adm-duration" style="padding:10px 12px;">
+              <option value="1">شهر</option>
+              <option value="3">3 شهور</option>
+              <option value="6">6 شهور</option>
+              <option value="12">سنة كاملة</option>
+            </select>
+          </div>
+        </div>
+        <button class="big-btn" onclick="activateUser()" id="adm-activate-btn" disabled style="opacity:.4;">⚡ تفعيل الاشتراك</button>
+        <div id="adm-result" style="display:none;margin-top:12px;padding:12px 16px;border-radius:10px;font-size:.84rem;font-weight:700;text-align:center;"></div>
+      </div>
+
+      <!-- All users list -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div class="stitle" style="margin-bottom:0;">كل المستخدمين</div>
+          <button onclick="renderAdminUsers()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-family:'Cairo',sans-serif;font-size:.74rem;color:var(--muted);cursor:pointer;">🔄 تحديث</button>
+        </div>
+        <div id="adm-users-list"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end screen-app -->
+
+  <div class="credit">
+    <div class="cdot" onclick="adminClickCount()" style="cursor:pointer;"></div>
+    <span class="cby">تصميم وبرمجة</span>
+    <span class="cname">أدهم الخبيري</span>
+  </div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC14hjn7yfz-8fnyK3GgaHZZ5FRIkSChkU",
+  authDomain: "zakr-platform.firebaseapp.com",
+  projectId: "zakr-platform",
+  storageBucket: "zakr-platform.firebasestorage.app",
+  messagingSenderId: "171700046042",
+  appId: "1:171700046042:web:a898f119d231644b40bde3"
+};
+
+const _app = initializeApp(firebaseConfig);
+const _auth = getAuth(_app);
+const _db = getFirestore(_app);
+
+// Expose Firebase to window so regular script can use it
+window._auth = _auth;
+window._db = _db;
+window._fbReady = true;
+
+// Firebase functions exposed to window
+window._createUser = (email,pass) => createUserWithEmailAndPassword(_auth,email,pass);
+window._signIn = (email,pass) => signInWithEmailAndPassword(_auth,email,pass);
+window._signOut = () => signOut(_auth);
+window._onAuth = (cb) => onAuthStateChanged(_auth,cb);
+window._setDoc = (path,data) => setDoc(doc(_db,...path.split('/')),data,{merge:true});
+window._getDoc = async (path) => { const s=await getDoc(doc(_db,...path.split('/'))); return s.exists()?s.data():null; };
+window._getDocs = async (col) => { const s=await getDocs(collection(_db,col)); return s.docs.map(d=>({uid:d.id,...d.data()})); };
+</script>
+
+<script>
+let adminClicks=0,adminTimer=null;
+function adminClickCount(){
+  adminClicks++;
+  clearTimeout(adminTimer);
+  adminTimer=setTimeout(()=>adminClicks=0,2000);
+  if(adminClicks>=5){adminClicks=0;goBNav('admin');}
+}
+
+// ══ ADMIN SYSTEM ══
+const ADMIN_PIN = '1435'; // 🔑 غيّر الرقم السري ده
+
+function goAdmin(){
+  document.getElementById('admin-lock').style.display='block';
+  document.getElementById('admin-dash').style.display='none';
+  document.getElementById('admin-pin').value='';
+  document.getElementById('pin-err').style.display='none';
+  goBNav('admin');
+}
+function checkAdminPin(){
+  const pin=document.getElementById('admin-pin').value;
+  if(pin===ADMIN_PIN){
+    document.getElementById('admin-lock').style.display='none';
+    document.getElementById('admin-dash').style.display='block';
+    renderAdminStats();renderAdminUsers();
+  } else {
+    document.getElementById('pin-err').style.display='block';
+    document.getElementById('admin-pin').value='';
+    setTimeout(()=>document.getElementById('pin-err').style.display='none',2500);
+  }
+}
+async function renderAdminStats(){
+  const users=await getAllUsers();
+  const proC=users.filter(u=>u.subscription?.plan==='pro'&&(!u.subscription.expiresAt||new Date(u.subscription.expiresAt)>new Date())).length;
+  const tC=users.filter(u=>u.subscription?.plan==='teacher'&&(!u.subscription.expiresAt||new Date(u.subscription.expiresAt)>new Date())).length;
+  document.getElementById('adm-total').textContent=users.length;
+  document.getElementById('adm-pro').textContent=proC;
+  document.getElementById('adm-teacher').textContent=tC;
+  document.getElementById('adm-free').textContent=users.length-proC-tC;
+}
+async function searchUser(){
+  const q=document.getElementById('adm-email').value.trim().toLowerCase();
+  const btn=document.getElementById('adm-activate-btn');
+  const preview=document.getElementById('adm-user-preview');
+  if(q.length<3){preview.style.display='none';btn.disabled=true;btn.style.opacity='.4';return;}
+  const allU=await getAllUsers();let found=null;
+  allU.forEach(u=>{if(u.email?.toLowerCase()===q||u.name?.toLowerCase().includes(q))found=u;});
+  if(found){
+    preview.style.display='block';
+    document.getElementById('adm-uav').textContent=found.name?.[0]||'؟';
+    document.getElementById('adm-uname').textContent=found.name||'—';
+    document.getElementById('adm-uemail').textContent=found.email||found.uid;
+    const plan=found.subscription?.plan||'free';
+    const badge=document.getElementById('adm-ucurrent');
+    badge.textContent=PLANS[plan]?.badge||'مجاني';badge.className=`sub-status ${PLANS[plan]?.badgeCls||'free'}`;
+    document.getElementById('adm-uexpiry').textContent=found.subscription?.expiresAt?`ينتهي: ${new Date(found.subscription.expiresAt).toLocaleDateString('ar-EG')}`:'';
+    btn.disabled=false;btn.style.opacity='1';btn.dataset.uid=found.uid;
+  } else {
+    preview.style.display='none';btn.disabled=true;btn.style.opacity='.4';
+  }
+}
+async function activateUser(){
+  const uid=document.getElementById('adm-activate-btn').dataset.uid;if(!uid)return;
+  const plan=document.getElementById('adm-plan').value;
+  const billing=document.getElementById('adm-billing').value;
+  const months=+document.getElementById('adm-duration').value;
+  const ud=await getUD(uid);const userName=ud.name||uid;
+  if(plan==='free'){ud.subscription={plan:'free',startedAt:new Date().toISOString(),expiresAt:null};}
+  else{const expiry=new Date();expiry.setMonth(expiry.getMonth()+months);ud.subscription={plan,billing,startedAt:new Date().toISOString(),expiresAt:expiry.toISOString(),activatedBy:'admin'};}
+  await saveUD(uid,ud);
+  const res=document.getElementById('adm-result');res.style.display='block';
+  res.style.cssText='display:block;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);color:#6ee7b7;padding:12px 16px;border-radius:10px;font-size:.84rem;font-weight:700;text-align:center;margin-top:12px;';
+  res.textContent=`✅ تم تفعيل ${PLANS[plan]?.name||'مجاني'} لـ ${userName} — ينتهي ${plan!=='free'?new Date(ud.subscription.expiresAt).toLocaleDateString('ar-EG'):'لا ينتهي'}`;
+  renderAdminStats();renderAdminUsers();searchUser();
+  setTimeout(()=>res.style.display='none',5000);
+}
+async function renderAdminUsers(){
+  const users=(await getAllUsers()).map(([uid,u])=>({uid,...u}))
+    .sort((a,b)=>{const ap=a.subscription?.plan||'free',bp=b.subscription?.plan||'free';if(ap!=='free'&&bp==='free')return -1;if(ap==='free'&&bp!=='free')return 1;return 0;});
+  const el=document.getElementById('adm-users-list');
+  if(!users.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;font-size:.85rem;">لا يوجد مستخدمين بعد</div>';return;}
+  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:10px;padding:8px 12px;font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border);margin-bottom:8px;"><span>المستخدم</span><span>الخطة</span><span>الانتهاء</span><span></span></div>
+  ${users.map(u=>{
+    const plan=u.subscription?.plan||'free';
+    const active=plan!=='free'&&(!u.subscription?.expiresAt||new Date(u.subscription.expiresAt)>new Date());
+    const expiry=u.subscription?.expiresAt?new Date(u.subscription.expiresAt).toLocaleDateString('ar-EG'):'—';
+    return`<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;padding:10px 12px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:6px;">
+      <div><div style="font-weight:700;font-size:.82rem;">${u.name||'—'}</div><div style="font-size:.66rem;color:var(--muted);">${u.email||u.uid}</div></div>
+      <span class="sub-status ${PLANS[plan]?.badgeCls||'free'}">${PLANS[plan]?.badge||'مجاني'}</span>
+      <span style="font-size:.7rem;color:var(--muted);">${active?expiry:'—'}</span>
+      <button onclick="quickActivate('${u.uid}')" style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);border-radius:7px;padding:4px 9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.68rem;color:#60a5fa;">تفعيل</button>
+    </div>`;
+  }).join('')}`;
+}
+async function quickActivate(uid){
+  const u=await getUD(uid);if(!u)return;
+  document.getElementById('adm-email').value=u.email||uid;
+  searchUser();
+  document.getElementById('adm-email').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+// ══ SUBSCRIPTION SYSTEM ══
+const PLANS = {
+  free:    {name:'مجاني',    examLimit:3, fcLimit:5,  badge:'مجاني',  badgeCls:'free'},
+  pro:     {name:'Pro 🚀',   examLimit:999,fcLimit:999,badge:'Pro',   badgeCls:'pro'},
+  teacher: {name:'مدرس 👨‍🏫',examLimit:999,fcLimit:999,badge:'مدرس', badgeCls:'teacher-sub'},
+};
+const PRICES = {
+  monthly:{pro:150,teacher:150},
+  yearly: {pro:1200,teacher:1200},
+};
+let billingMode='monthly';
+
+function getSubPlan(){
+  const ud=CU;const sub=ud.subscription;
+  if(!sub||!sub.plan||sub.plan==='free') return 'free';
+  if(sub.expiresAt&&new Date(sub.expiresAt)<new Date()) return 'free';
+  return sub.plan;
+}
+function isPro(){const p=CU?.subscription?.plan||'free';return p==='pro'||p==='teacher';}
+
+function toggleBilling(){
+  billingMode=billingMode==='monthly'?'yearly':'monthly';
+  document.getElementById('billing-toggle').classList.toggle('yearly',billingMode==='yearly');
+  document.getElementById('lbl-monthly').classList.toggle('on',billingMode==='monthly');
+  document.getElementById('lbl-yearly').classList.toggle('on',billingMode==='yearly');
+  updatePriceDisplay();
+}
+function updatePriceDisplay(){
+  const p=PRICES[billingMode];
+  // Pro
+  document.getElementById('pro-amount').textContent=billingMode==='yearly'?Math.round(p.pro/12):p.pro;
+  document.getElementById('pro-per').textContent=billingMode==='yearly'?'/ شهر (سنوي)':'/ شهر';
+  const proOld=document.getElementById('pro-old-price');
+  if(proOld){proOld.style.display=billingMode==='yearly'?'block':'none';proOld.textContent=`${PRICES.monthly.pro} جنيه/شهر`;}
+  // Teacher
+  document.getElementById('teacher-amount').textContent=billingMode==='yearly'?Math.round(p.teacher/12):p.teacher;
+  document.getElementById('teacher-per').textContent=billingMode==='yearly'?'/ شهر (سنوي)':'/ شهر';
+  const tOld=document.getElementById('teacher-old-price');
+  if(tOld){tOld.style.display=billingMode==='yearly'?'block':'none';tOld.textContent=`${PRICES.monthly.teacher} جنيه/شهر`;}
+  // Current sub banner
+  renderSubBanner();
+}
+function renderSubBanner(){
+  const el=document.getElementById('current-sub-banner');if(!el)return;
+  const plan=CU?.subscription?.plan||'free';const sub=CU?.subscription;
+  if(plan==='free'){
+    el.innerHTML='';return;
+  }
+  const expiry=sub?.expiresAt?new Date(sub.expiresAt).toLocaleDateString('ar-EG'):'—';
+  el.innerHTML=`<div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:14px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <div><div style="font-size:.8rem;font-weight:700;color:#93c5fd;">اشتراكك الحالي: ${PLANS[plan].name}</div><div style="font-size:.72rem;color:var(--muted);margin-top:2px;">ينتهي في ${expiry} · ${sub?.billing==='yearly'?'سنوي':'شهري'}</div></div>
+    <span style="font-size:.72rem;color:#34d399;font-weight:700;">✓ فعّال</span>
+  </div>`;
+}
+function openSubscription(){goBNav('pricing');}
+
+async function choosePlan(plan){
+  const ud=await getUD(CU.uid);
+  if(plan==='free'){
+    ud.subscription={plan:'free',startedAt:new Date().toISOString(),expiresAt:null};
+  } else {
+    const months=billingMode==='yearly'?12:1;
+    const expiry=new Date();expiry.setMonth(expiry.getMonth()+months);
+    ud.subscription={plan,billing:billingMode,startedAt:new Date().toISOString(),expiresAt:expiry.toISOString(),price:PRICES[billingMode][plan]};
+    toast(`🎉 تم الاشتراك في خطة ${PLANS[plan].name} بنجاح!`,'ok');
+  }
+  await saveUD(CU.uid,ud);
+  goBNav('home');
+  updateSubBadge();updateHomeStats();
+}
+function updateSubBadge(){
+  const plan=CU?.subscription?.plan||'free';const info=PLANS[plan]||PLANS.free;
+  const badge=document.getElementById('nav-sub-badge');
+  if(badge){badge.textContent=info.badge;badge.className=`sub-status ${info.badgeCls}`;}
+}
+function showPaywall(title,sub){
+  document.getElementById('paywall-title').textContent=title||'الميزة دي للمشتركين فقط';
+  document.getElementById('paywall-sub').textContent=sub||'اشترك في خطة Pro للوصول لكل المزايا';
+  document.getElementById('paywall').classList.add('on');
+}
+function closePaywall(){document.getElementById('paywall').classList.remove('on');}
+async function checkLimit(type){
+  if(isPro()) return true;
+  const ud=CU;
+  if(type==='exam'){
+    const today=new Date().toDateString();
+    const cnt=(ud.history||[]).filter(h=>{try{return new Date(h.rawDate||Date.now()).toDateString()===today;}catch{return false;}}).length;
+    if(cnt>=PLANS.free.examLimit){showPaywall('وصلت للحد اليومي 🚫',`الخطة المجانية تسمح بـ ${PLANS.free.examLimit} امتحانات يومياً — اشترك في Pro للامتحانات غير المحدودة`);return false;}
+  }
+  if(type==='fc'){
+    const todayFC=ud.fcToday||0;
+    if(todayFC>=PLANS.free.fcLimit){showPaywall('وصلت للحد اليومي 🚫','الخطة المجانية تسمح بـ 5 بطاقات يومياً فقط — اشترك في Pro للمذاكرة بدون حدود');return false;}
+  }
+  return true;
+}
+
+// ══ PAYMENT MODAL ══
+// ⚙️ غيّر الأرقام دي بأرقامك الحقيقية
+const OWNER = {
+  etisalat: '01122741435',
+  vodafone: '01122741435',
+  orange:   '01122741435',
+  we:       '01122741435',
+  instapay: '01122741435',
+  whatsapp: '201122741435',
+  name:     'أدهم الخبيري',
+};
+
+let payState = {plan:null, wallet:null};
+
+function openPayModal(plan){
+  payState = {plan, wallet:null};
+  const price = PRICES[billingMode][plan];
+  const planName = plan==='pro' ? 'طالب Pro' : 'مدرس Pro';
+  const period = billingMode==='yearly' ? 'سنوي' : 'شهري';
+  document.getElementById('pay-modal-title').textContent = `اشتراك ${planName} — ${price} جنيه / ${period==='yearly'?'سنة':'شهر'}`;
+  document.getElementById('pay-amount-display').textContent = `${price} جنيه`;
+  goPayStep(1);
+  document.getElementById('pay-modal').classList.add('on');
+}
+
+function closePayModal(){
+  document.getElementById('pay-modal').classList.remove('on');
+}
+
+function selectWallet(el, w){
+  document.querySelectorAll('.wallet-opt').forEach(x=>x.classList.remove('on'));
+  el.classList.add('on');
+  payState.wallet = w;
+  const num = OWNER[w] || OWNER.vodafone;
+  document.getElementById('wallet-number').textContent = num;
+  document.getElementById('step1-next').disabled = false;
+  document.getElementById('step1-next').style.opacity = '1';
+}
+
+function goPayStep(step){
+  [1,2,3].forEach(i=>{
+    document.getElementById(`pay-step-${i}`).style.display = i===step?'block':'none';
+    const ps = document.getElementById(`ps-${i}`);
+    ps.className = 'pay-step' + (i<step?' done':i===step?' on':'');
+  });
+  document.getElementById('ps-line').style.width = step===1?'0%':step===2?'50%':'100%';
+
+  if(step===3){
+    const ud = CU;
+    const price = PRICES[billingMode][payState.plan];
+    const planName = payState.plan==='pro'?'طالب Pro':'مدرس Pro';
+    const period = billingMode==='yearly'?'سنوي':'شهري';
+    const walletNum = OWNER[payState.wallet]||OWNER.vodafone;
+    const msg = `مرحباً، اسمي ${ud.name||CU.name}، إيميلي ${ud.email||CU.email||'—'}، اشتركت في خطة ${planName} (${period}) بمبلغ ${price} جنيه عبر ${payState.wallet}. بعتلك إيصال التحويل.`;
+    document.getElementById('wa-number-display').textContent = OWNER.vodafone;
+    document.getElementById('wa-msg-preview').textContent = msg;
+    document.getElementById('whatsapp-link').href = `https://wa.me/${OWNER.whatsapp}?text=${encodeURIComponent(msg)}`;
+  }
+}
+
+function copyWalletNum(){
+  const num = document.getElementById('wallet-number').textContent;
+  navigator.clipboard?.writeText(num).then(()=>toast('تم نسخ الرقم ✓','ok')).catch(()=>toast('انسخ الرقم يدوياً','fail'));
+}
+
+
+const BADGES = [
+  {id:'first',em:'🎯',name:'الأولى',desc:'أول امتحان',check:u=>u.history.length>=1},
+  {id:'perfect',em:'💯',name:'مثالي',desc:'100% في امتحان',check:u=>u.history.some(h=>h.pct===100)},
+  {id:'ten',em:'🔟',name:'عشرة',desc:'10 امتحانات',check:u=>u.history.length>=10},
+  {id:'streak',em:'🔥',name:'مستمر',desc:'5 امتحانات متتالية',check:u=>u.history.length>=5},
+  {id:'fc50',em:'🃏',name:'Flashcard',desc:'50 بطاقة مذاكرة',check:u=>(u.fcCount||0)>=50},
+  {id:'top',em:'👑',name:'المتصدر',desc:'المركز الأول',check:()=>false},
+  {id:'math',em:'📐',name:'رياضاتي',desc:'5 امتحانات رياضيات',check:u=>u.history.filter(h=>h.subj==='الرياضيات').length>=5},
+  {id:'allsubj',em:'🌟',name:'الشامل',desc:'امتحن في 5 مواد',check:u=>new Set(u.history.map(h=>h.subj)).size>=5},
+];
+
+// ══ FIREBASE CONFIG ══
+// ══ DATA LAYER (Firebase) ══
+async function getUD(uid) {
+  // Guest mode — use CU in memory
+  if(uid==='guest'||CU?.isGuest) return CU||{history:[],fcCount:0,points:0,badges:[],subscription:{plan:'free'}};
+  try {
+    const data = await window._getDoc(`users/${uid}`);
+    return data || {history:[],fcCount:0,points:0,badges:[],subscription:{plan:'free'}};
+  } catch(e) { return {history:[],fcCount:0,points:0,badges:[],subscription:{plan:'free'}}; }
+}
+async function saveUD(uid, data) {
+  // Guest mode — save to CU in memory only
+  if(uid==='guest'||CU?.isGuest){Object.assign(CU,data);return;}
+  try { await window._setDoc(`users/${uid}`, data); } catch(e) { console.error(e); }
+}
+async function getAllUsers() {
+  try { return await window._getDocs('users'); } catch(e) { return []; }
+}
+
+// ══ AUTH ══
+let CU=null, selectedRole='student';
+
+function switchAuth(m){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('on',(i===0&&m==='login')||(i===1&&m==='register')));
+  document.getElementById('login-form').style.display=m==='login'?'block':'none';
+  document.getElementById('register-form').style.display=m==='register'?'block':'none';
+}
+function pickRole(btn){document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');selectedRole=btn.dataset.role;}
+
+function loginAsGuest(){
+  CU = {
+    uid: 'guest',
+    name: 'زائر',
+    email: '',
+    role: 'student',
+    isGuest: true,
+    history: [],
+    fcCount: 0,
+    points: 0,
+    badges: [],
+    subscription: {plan:'free'},
+  };
+  initApp();
+}
+
+async function doRegister(){
+  const name=document.getElementById('rg-name').value.trim();
+  const email=document.getElementById('rg-email').value.trim();
+  const pass=document.getElementById('rg-pass').value;
+  const err=document.getElementById('rg-err');
+  if(!name||!email||!pass){showErr(err,'كل الحقول مطلوبة');return;}
+  if(pass.length<6){showErr(err,'كلمة المرور أقل من 6 أحرف');return;}
+  showLoading('جاري إنشاء الحساب...');
+  try {
+    const cred = await window._createUser(email, pass);
+    const uid = cred.user.uid;
+    const userData = {name,email,role:selectedRole,history:[],fcCount:0,points:0,badges:[],subscription:{plan:'free'},createdAt:new Date().toISOString()};
+    await window._setDoc(`users/${uid}`, userData);
+    CU = {uid,name,email,role:selectedRole,...userData};
+    hideLoading();initApp();
+  } catch(e) {
+    hideLoading();
+    const msg=e.code==='auth/email-already-in-use'?'الإيميل ده مسجل بالفعل':e.code==='auth/invalid-email'?'إيميل غير صحيح':'حصل خطأ، حاول تاني';
+    showErr(err,msg);
+  }
+}
+
+async function doLogin(){
+  const email=document.getElementById('li-name').value.trim();
+  const pass=document.getElementById('li-pass').value;
+  const err=document.getElementById('li-err');
+  if(!email||!pass){showErr(err,'أدخل البيانات');return;}
+  showLoading('جاري تسجيل الدخول...');
+  try {
+    const cred = await window._signIn(email, pass);
+    const uid = cred.user.uid;
+    const userData = await getUD(uid);
+    CU = {uid,email,name:userData?.name||email,role:userData?.role||'student',...userData};
+    hideLoading();initApp();
+  } catch(e) {
+    hideLoading();showErr(err,'الإيميل أو كلمة المرور غلط');
+  }
+}
+
+async function doLogout(){
+  if(!CU?.isGuest) await window._signOut();
+  CU=null;
+  document.getElementById('screen-auth').classList.add('on');
+  document.getElementById('screen-app').classList.remove('on');
+  document.getElementById('li-name').value='';
+  document.getElementById('li-pass').value='';
+}
+
+function showErr(el,msg){el.textContent=msg;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),3500);}
+
+// Auto-login — wait for Firebase to be ready then check auth state
+(function waitForFb(){
+  if(window._onAuth){
+    window._onAuth(async(user)=>{
+      if(user&&!CU){
+        const userData=await getUD(user.uid);
+        CU={uid:user.uid,email:user.email,name:userData?.name||user.email,role:userData?.role||'student',...userData};
+        initApp();
+      }
+    });
+  } else { setTimeout(waitForFb,100); }
+})();
+function initApp(){
+  document.getElementById('screen-auth').classList.remove('on');
+  document.getElementById('screen-app').classList.add('on');
+  document.getElementById('nav-av').textContent=CU.name[0];
+  document.getElementById('nav-name-el').textContent=CU.isGuest?'زائر':CU.name.split(' ')[0];
+  document.getElementById('welcome-name').textContent=CU.isGuest?'زائر':CU.name.split(' ')[0];
+  // Show guest banner
+  const gb=document.getElementById('guest-banner');
+  if(gb) gb.style.display=CU.isGuest?'flex':'none';
+  const tabs=document.getElementById('nav-tabs');
+  const bn=document.getElementById('bottom-nav');
+  updateSubBadge();
+  const ud=CU;
+  const isNewUser = !ud.subscription && !CU.isGuest;
+  if(CU.role==='teacher'){
+    tabs.innerHTML=`<button class="ntab on" onclick="goPage('teacher',this)">👨‍🏫 لوحة المدرس</button>`;
+    bn.innerHTML=`<button class="bnav-btn on" id="bn-teacher" onclick="goBNav('teacher')"><span class="bi">👨‍🏫</span><span class="bl">لوحتي</span></button>
+    <button class="bnav-btn" onclick="doLogout()"><span class="bi">🚪</span><span class="bl">خروج</span></button>`;
+    goPage('teacher',tabs.firstChild);renderTeacher();
+    if(isNewUser) setTimeout(()=>goBNav('pricing'), 800);
+  } else {
+    goPage('home',tabs.querySelector('.ntab'));
+    if(isNewUser) setTimeout(()=>goBNav('pricing'), 800);
+  }
+  updateHomeStats();
+}
+// ══ INIT ══
+function goPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('page-'+name).classList.add('on');
+  if(btn)btn.classList.add('on');
+  if(name==='progress')renderProgress();
+  if(name==='leaderboard')renderLeaderboard();
+  if(name==='teacher')renderTeacher();
+  if(name==='admin'){renderAdminStats();renderAdminUsers();}
+  if(name==='pricing'){updatePriceDisplay();}
+  if(name==='admin'){document.getElementById('admin-lock').style.display='block';document.getElementById('admin-dash').style.display='none';document.getElementById('admin-pin').value='';}
+}
+function goBNav(name){
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('on'));
+  const el=document.getElementById('bn-'+name);if(el)el.classList.add('on');
+  goPage(name,null);
+}
+
+// ══ STAGE SELECTION ══
+let selectedStage = 'ثانوي';
+const STAGE_SUBJECTS = {
+  'ثانوي': [
+    {s:'الرياضيات',ic:'📐',nm:'رياضيات'},
+    {s:'الفيزياء',ic:'⚡',nm:'فيزياء'},
+    {s:'الكيمياء',ic:'🧪',nm:'كيمياء'},
+    {s:'الأحياء',ic:'🧬',nm:'أحياء'},
+    {s:'اللغة العربية',ic:'📖',nm:'عربي'},
+    {s:'اللغة الإنجليزية',ic:'🔤',nm:'إنجليزي'},
+    {s:'التاريخ',ic:'🏛️',nm:'تاريخ'},
+    {s:'الجغرافيا',ic:'🗺️',nm:'جغرافيا'},
+    {s:'الفلسفة',ic:'🧠',nm:'فلسفة'},
+    {s:'علم الاجتماع',ic:'💬',nm:'اجتماع'},
+  ],
+  'تجريبي ثانوي': [
+    {s:'Mathematics (Exp)',ic:'📐',nm:'Mathematics'},
+    {s:'Physics (Exp)',ic:'⚡',nm:'Physics'},
+    {s:'Chemistry (Exp)',ic:'🧪',nm:'Chemistry'},
+    {s:'Biology (Exp)',ic:'🧬',nm:'Biology'},
+    {s:'اللغة العربية',ic:'📖',nm:'عربي'},
+    {s:'English Language',ic:'🔤',nm:'English'},
+    {s:'History (Exp)',ic:'🏛️',nm:'History'},
+    {s:'Geography (Exp)',ic:'🗺️',nm:'Geography'},
+    {s:'Philosophy (Exp)',ic:'🧠',nm:'Philosophy'},
+  ],
+  'إعدادي': [
+    {s:'رياضيات إعدادي',ic:'📐',nm:'رياضيات'},
+    {s:'علوم إعدادي',ic:'🔬',nm:'علوم'},
+    {s:'عربي إعدادي',ic:'📖',nm:'عربي'},
+    {s:'إنجليزي إعدادي',ic:'🔤',nm:'إنجليزي'},
+    {s:'تاريخ إعدادي',ic:'🏛️',nm:'تاريخ'},
+    {s:'جغرافيا إعدادي',ic:'🗺️',nm:'جغرافيا'},
+    {s:'دراسات اجتماعية',ic:'💬',nm:'دراسات'},
+  ],
+  'تجريبي إعدادي': [
+    {s:'Mathematics (Prep Exp)',ic:'📐',nm:'Mathematics'},
+    {s:'Science (Prep Exp)',ic:'🔬',nm:'Science'},
+    {s:'اللغة العربية',ic:'📖',nm:'عربي'},
+    {s:'English (Prep Exp)',ic:'🔤',nm:'English'},
+    {s:'Social Studies (Prep Exp)',ic:'🗺️',nm:'Social Studies'},
+  ],
+  'ابتدائي': [
+    {s:'رياضيات ابتدائي',ic:'📐',nm:'رياضيات'},
+    {s:'علوم ابتدائي',ic:'🔬',nm:'علوم'},
+    {s:'عربي ابتدائي',ic:'📖',nm:'عربي'},
+    {s:'إنجليزي ابتدائي',ic:'🔤',nm:'إنجليزي'},
+    {s:'دراسات ابتدائي',ic:'🗺️',nm:'دراسات'},
+    {s:'تربية دينية',ic:'☪️',nm:'دين'},
+  ],
+  'تجريبي ابتدائي': [
+    {s:'Mathematics (Pri Exp)',ic:'📐',nm:'Mathematics'},
+    {s:'Science (Pri Exp)',ic:'🔬',nm:'Science'},
+    {s:'اللغة العربية',ic:'📖',nm:'عربي'},
+    {s:'English (Pri Exp)',ic:'🔤',nm:'English'},
+    {s:'Social Studies (Pri Exp)',ic:'🗺️',nm:'Social Studies'},
+    {s:'تربية دينية',ic:'☪️',nm:'دين'},
+  ],
+};
+
+function selectStage(btn){
+  document.querySelectorAll('.stage-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  selectedStage = btn.dataset.stage;
+  selectedSubj = '';
+  // Rebuild subject grid
+  const grid = document.getElementById('subj-grid');
+  const subjects = STAGE_SUBJECTS[selectedStage] || STAGE_SUBJECTS['ثانوي'];
+  grid.innerHTML = subjects.map(s=>`
+    <div class="sj" data-s="${s.s}">
+      <span class="ic">${s.ic}</span>
+      <div class="nm">${s.nm}</div>
+      <div class="bs">—</div>
+    </div>`).join('');
+  // Re-attach click events
+  grid.querySelectorAll('.sj').forEach(c=>{
+    c.addEventListener('click',()=>{
+      grid.querySelectorAll('.sj').forEach(x=>x.classList.remove('on'));
+      c.classList.add('on'); selectedSubj=c.dataset.s;
+    });
+  });
+}
+
+
+document.querySelectorAll('#subj-grid .sj').forEach(c=>{
+  c.addEventListener('click',()=>{document.querySelectorAll('#subj-grid .sj').forEach(x=>x.classList.remove('on'));c.classList.add('on');selectedSubj=c.dataset.s;});
+});
+document.querySelectorAll('#fc-tags .fc-tag').forEach(t=>{
+  t.addEventListener('click',()=>{document.querySelectorAll('#fc-tags .fc-tag').forEach(x=>x.classList.remove('on'));t.classList.add('on');});
+});
+document.querySelectorAll('#qbank-filters .qb-filter').forEach(f=>{
+  f.addEventListener('click',()=>{document.querySelectorAll('#qbank-filters .qb-filter').forEach(x=>x.classList.remove('on'));f.classList.add('on');renderQBank();});
+});
+
+// ══ HOME STATS ══
+async function updateHomeStats(){
+  const ud=await getUD(CU.uid);const h=ud.history||[];
+  document.getElementById('hs-pts').textContent=ud.points||0;
+  document.getElementById('hs-exams').textContent=h.length;
+  document.getElementById('hs-badges').textContent=(ud.badges||[]).length;
+  document.getElementById('nav-pts').textContent=(ud.points||0)+' ⭐';
+  if(h.length){
+    const avg=Math.round(h.reduce((s,x)=>s+x.pct,0)/h.length);
+    document.getElementById('hs-avg').textContent=avg+'%';
+  }
+  const sm={};h.forEach(x=>{if(!sm[x.subj]||x.pct>sm[x.subj])sm[x.subj]=x.pct;});
+  Object.entries(sm).forEach(([s,v])=>{const el=document.getElementById('bst-'+s);if(el)el.textContent='أحسن: '+v+'%';});
+}
+
+// ══ POINTS & BADGES ══
+function calcPoints(pct,total,elapsed){
+  let pts=Math.round((pct/100)*total*10);
+  if(pct>=90)pts=Math.round(pts*1.5);
+  if(pct===100)pts+=50;
+  if(elapsed>0&&elapsed<total*20)pts=Math.round(pts*1.2);
+  return pts;
+}
+function checkBadges(ud){
+  const newBadges=[];
+  BADGES.forEach(b=>{
+    if(!(ud.badges||[]).includes(b.id)&&b.check(ud)){
+      ud.badges=ud.badges||[];ud.badges.push(b.id);newBadges.push(b);
+    }
+  });
+  return newBadges;
+}
+
+// ══ EXAM ══
+let Q={qs:[],cur:0,ans:[],score:0,tmSec:0,tmInt:null,start:0,elapsed:0};
+async function startExam(){
+  if(!selectedSubj){toast('اختار مادة الأول! 👆','fail');return;}
+  if(!checkLimit('exam')) return;
+  const numQ=+document.getElementById('num-q').value;
+  const diff=document.getElementById('diff').value;
+  const topic=document.getElementById('topic-in').value.trim();
+  const timerPer=+document.getElementById('timer-opt').value;
+  showLoading('الـ AI بيولّد الأسئلة... 🤖');
+  const tp=topic?`الأسئلة تكون عن: ${topic}`:'';
+  const isExp = selectedStage.includes('تجريبي');
+  const prompt= isExp
+    ? `You are an expert teacher in the Egyptian experimental language school curriculum.
+Create a practice exam of ${numQ} multiple choice questions in the subject: ${selectedSubj}, difficulty: ${diff}.
+${tp}
+Return JSON only: {"questions":[{"question":"text","options":["a","b","c","d"],"answer":0,"explanation":"explanation","category":"subtopic"}]}`
+    : `أنت مدرس خبير في مناهج الثانوية العامة المصرية.
+اعمل امتحان تدريبي من ${numQ} سؤال اختيار من متعدد في مادة ${selectedSubj} بمستوى ${diff}.
+${tp}
+أرجع JSON فقط: {"questions":[{"question":"نص","options":["أ","ب","ج","د"],"answer":0,"explanation":"شرح","category":"موضوع فرعي"}]}`;
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,messages:[{role:"user",content:prompt}]})});
+    const data=await res.json();
+    const raw=data.content.map(i=>i.text||'').join('');
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    Q.qs=parsed.questions;Q.cur=0;Q.score=0;Q.ans=new Array(Q.qs.length).fill(null);
+    Q.tmSec=timerPer;Q.start=Date.now();
+    hideLoading();
+    document.getElementById('quiz-subj').textContent=selectedSubj;
+    document.getElementById('sc-tot').textContent=Q.qs.length;
+    buildDots();renderQ();
+    goPage('quiz',null);
+    timerPer>0?startTimer(timerPer):(document.getElementById('t-num').textContent='∞');
+  }catch(e){hideLoading();toast('حصل خطأ، حاول تاني ⚠️','fail');}
+}
+
+function startTimer(sec){
+  clearInterval(Q.tmInt);let r=sec;updateT(r);
+  Q.tmInt=setInterval(()=>{r--;updateT(r);if(r<=0){clearInterval(Q.tmInt);if(Q.ans[Q.cur]===null){Q.ans[Q.cur]=-1;updateDots();Q.cur<Q.qs.length-1?(Q.cur++,renderQ(),startTimer(Q.tmSec)):finishExam();}}},1000);
+}
+function updateT(s){const el=document.getElementById('t-num');const m=Math.floor(s/60),sec=s%60;el.textContent=m>0?`${m}:${String(sec).padStart(2,'0')}`:`${s}s`;el.className='t-num'+(s<=10?' hot':'');}
+function buildDots(){document.getElementById('dots').innerHTML=Q.qs.map((_,i)=>`<div class="dot" id="d${i}" onclick="jmpQ(${i})"></div>`).join('');}
+function updateDots(){Q.qs.forEach((_,i)=>{const d=document.getElementById('d'+i);if(!d)return;const a=Q.ans[i];if(i===Q.cur){d.className='dot cur';return;}if(a===null){d.className='dot';return;}d.className=a===Q.qs[i].answer?'dot ok':'dot fail';});}
+function jmpQ(i){if(Q.ans[Q.cur]!==null||i<Q.cur){clearInterval(Q.tmInt);Q.cur=i;renderQ();Q.tmSec>0&&Q.ans[i]===null&&startTimer(Q.tmSec);}}
+
+function renderQ(){
+  const q=Q.qs[Q.cur];const L=['أ','ب','ج','د'];const done=Q.ans[Q.cur]!==null;const last=Q.cur===Q.qs.length-1;
+  document.getElementById('prog-fill').style.width=`${(Q.cur/Q.qs.length)*100}%`;
+  document.getElementById('sc-live').textContent=Q.score;
+  const nb=document.getElementById('next-btn');nb.disabled=!done;nb.textContent=last?'إنهاء ✅':'التالي ←';
+  document.getElementById('q-wrap').innerHTML=`<div class="q-card">
+    <div class="q-badge">سؤال ${Q.cur+1}/${Q.qs.length}${q.category?' · '+q.category:''}</div>
+    <div class="q-text">${q.question}</div>
+    <div class="opts">${q.options.map((o,i)=>{let c='';if(done){if(i===q.answer)c='correct';else if(i===Q.ans[Q.cur])c='wrong';}return`<button class="opt ${c}" ${done?'disabled':''} onclick="pickA(${i})"><span class="opt-l">${L[i]}</span>${o}</button>`;}).join('')}</div>
+    <div class="expl ${done?'on':''}"><strong>💡 الشرح:</strong> ${q.explanation}</div>
+  </div>`;
+  updateDots();
+}
+function pickA(idx){if(Q.ans[Q.cur]!==null)return;clearInterval(Q.tmInt);const q=Q.qs[Q.cur];Q.ans[Q.cur]=idx;if(idx===q.answer){Q.score++;toast('إجابة صحيحة! 🎉','ok');}else toast('إجابة خاطئة ❌','fail');document.getElementById('next-btn').disabled=false;renderQ();}
+function nextQ(){Q.cur<Q.qs.length-1?(Q.cur++,renderQ(),Q.tmSec>0&&Q.ans[Q.cur]===null&&startTimer(Q.tmSec)):finishExam();}
+function confirmQuit(){
+  document.getElementById('quit-modal').classList.add('on');
+}
+
+async function finishExam(){
+  clearInterval(Q.tmInt);Q.elapsed=Math.round((Date.now()-Q.start)/1000);
+  const pct=Math.round((Q.score/Q.qs.length)*100);
+  const pts=calcPoints(pct,Q.qs.length,Q.elapsed);
+  // Save
+  const ud=await getUD(CU.uid);ud.history=ud.history||[];
+  ud.history.unshift({subj:selectedSubj,pct,ok:Q.score,total:Q.qs.length,date:new Date().toLocaleDateString('ar-EG'),rawDate:new Date().toISOString(),elapsed:Q.elapsed,pts});
+  if(ud.history.length>60)ud.history.pop();
+  ud.points=(ud.points||0)+pts;
+  const newBadges=checkBadges(ud);
+  await saveUD(CU.uid,ud);
+  // Update CU cache
+  CU.points=ud.points;CU.history=ud.history;CU.badges=ud.badges;
+  // Ring
+  const off=326.7-(pct/100)*326.7;
+  const ring=document.getElementById('ring-fg');
+  ring.style.stroke=pct>=80?'#10b981':pct>=60?'#f59e0b':'#ef4444';
+  setTimeout(()=>ring.style.strokeDashoffset=off,100);
+  document.getElementById('ring-pct').textContent=pct+'%';
+  let t,s;
+  if(pct>=90){t='أنت نجم! 🌟';s='أداء استثنائي!';}
+  else if(pct>=75){t='جيد جداً! 👏';s='راجع الأسئلة اللي وقعت فيها.';}
+  else if(pct>=60){t='جيد! 💪';s='في مجال للتحسين.';}
+  else if(pct>=50){t='مقبول 📚';s='ركّز على المواضيع الضعيفة.';}
+  else{t='محتاج مذاكرة 📖';s='لا تحبط، جرب تاني!';}
+  document.getElementById('res-title').textContent=t;
+  document.getElementById('res-sub').textContent=s;
+  document.getElementById('r-ok').textContent=Q.score;
+  document.getElementById('r-fail').textContent=Q.qs.length-Q.score;
+  const m=Math.floor(Q.elapsed/60),sec=Q.elapsed%60;
+  document.getElementById('r-time').textContent=m>0?`${m}:${String(sec).padStart(2,'0')}`:`${Q.elapsed}s`;
+  document.getElementById('pts-earned').textContent=`⭐ +${pts} نقطة`;
+  // Breakdown
+  const cats={};Q.qs.forEach((q,i)=>{const c=q.category||'عام';if(!cats[c])cats[c]={ok:0,total:0};cats[c].total++;if(Q.ans[i]===q.answer)cats[c].ok++;});
+  document.getElementById('bkdn-bars').innerHTML=Object.entries(cats).map(([c,v])=>{const p=Math.round((v.ok/v.total)*100);const color=p>=80?'#10b981':p>=60?'#f59e0b':'#ef4444';return`<div class="bbar"><div class="bbar-lbl"><span>${c}</span><span style="color:${color}">${p}%</span></div><div class="bbar-track"><div class="bbar-fill" style="width:0%;background:${color}" data-w="${p}"></div></div></div>`;}).join('');
+  setTimeout(()=>document.querySelectorAll('.bbar-fill').forEach(b=>b.style.width=b.dataset.w+'%'),200);
+  // New badges
+  const nbSec=document.getElementById('new-badges-section');
+  if(newBadges.length){nbSec.style.display='block';document.getElementById('new-badges-grid').innerHTML=newBadges.map(b=>`<div class="badge-item earned" style="animation:popIn .5s ease both;"><span class="badge-em">${b.em}</span><span class="badge-nm">${b.name}</span></div>`).join('');toast('🏅 حصلت على شارة جديدة!','pts');}
+  else nbSec.style.display='none';
+  goPage('results',null);updateHomeStats();
+}
+function reviewMode(){Q.cur=0;renderQ();const nb=document.getElementById('next-btn');nb.disabled=false;nb.textContent='التالي ←';nb.onclick=()=>{Q.cur<Q.qs.length-1?(Q.cur++,renderQ()):finishExam();};document.getElementById('t-num').textContent='—';goPage('quiz',null);}
+
+// ══ FLASHCARDS ══
+let FC={cards:[],idx:0,flipped:false};
+const FC_SUBJECTS = {
+  'ثانوي': ['الرياضيات','الفيزياء','الكيمياء','الأحياء','اللغة العربية','التاريخ','الجغرافيا','الفلسفة'],
+  'تجريبي': ['Mathematics (Exp)','Physics (Exp)','Chemistry (Exp)','Biology (Exp)','History (Exp)','Geography (Exp)','English Language'],
+  'إعدادي': ['رياضيات إعدادي','علوم إعدادي','عربي إعدادي','إنجليزي إعدادي','تاريخ إعدادي','جغرافيا إعدادي'],
+  'ابتدائي': ['رياضيات ابتدائي','علوم ابتدائي','عربي ابتدائي','إنجليزي ابتدائي','دراسات ابتدائي'],
+};
+const FC_ICONS = {'الرياضيات':'📐','الفيزياء':'⚡','الكيمياء':'🧪','الأحياء':'🧬','اللغة العربية':'📖','التاريخ':'🏛️','الجغرافيا':'🗺️','الفلسفة':'🧠','Mathematics (Exp)':'📐','Physics (Exp)':'⚡','Chemistry (Exp)':'🧪','Biology (Exp)':'🧬','History (Exp)':'🏛️','Geography (Exp)':'🗺️','English Language':'🔤','رياضيات إعدادي':'📐','علوم إعدادي':'🔬','عربي إعدادي':'📖','إنجليزي إعدادي':'🔤','تاريخ إعدادي':'🏛️','جغرافيا إعدادي':'🗺️','رياضيات ابتدائي':'📐','علوم ابتدائي':'🔬','عربي ابتدائي':'📖','إنجليزي ابتدائي':'🔤','دراسات ابتدائي':'🗺️'};
+
+function switchFcStage(btn){
+  document.querySelectorAll('[data-stage-fc]').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const stage=btn.dataset.stageFc;
+  const subjects=FC_SUBJECTS[stage]||FC_SUBJECTS['ثانوي'];
+  const tagsEl=document.getElementById('fc-tags');
+  tagsEl.innerHTML=subjects.map((s,i)=>`<button class="fc-tag ${i===0?'on':''}" data-s="${s}">${FC_ICONS[s]||'📚'} ${s.replace(' (Exp)','').replace(' إعدادي','').replace(' ابتدائي','')}</button>`).join('');
+  tagsEl.querySelectorAll('.fc-tag').forEach(t=>{
+    t.addEventListener('click',()=>{tagsEl.querySelectorAll('.fc-tag').forEach(x=>x.classList.remove('on'));t.classList.add('on');});
+  });
+  document.getElementById('fc-arena').classList.remove('on');
+}
+
+async function startFC(){
+  const sel=document.querySelector('#fc-tags .fc-tag.on');
+  if(!sel){toast('اختار مادة!','fail');return;}
+  if(!checkLimit('fc')) return;
+  showLoading('الـ AI بيولّد البطاقات... 🃏');
+  const subj=sel.dataset.s;
+  const isEng = subj.includes('(Exp)')||subj==='English Language';
+  const prompt = isEng
+    ? `You are an expert teacher. Create 10 flashcards for the subject: ${subj} (Egyptian experimental language school curriculum).
+Return JSON only: {"cards":[{"q":"question or concept","a":"brief answer"}]}`
+    : `أنت مدرس خبير. اعمل 10 بطاقات مذاكرة في مادة ${subj} للمنهج المصري.
+أرجع JSON فقط: {"cards":[{"q":"سؤال أو مفهوم","a":"إجابة مختصرة"}]}`;
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,messages:[{role:"user",content:prompt}]})});
+    const data=await res.json();
+    const raw=data.content.map(i=>i.text||'').join('');
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    FC.cards=parsed.cards;FC.idx=0;FC.flipped=false;
+    hideLoading();document.getElementById('fc-arena').classList.add('on');renderFC();
+  }catch(e){hideLoading();toast('حصل خطأ، حاول تاني','fail');}
+}
+function renderFC(){const c=FC.cards[FC.idx];document.getElementById('fc-prog').textContent=`بطاقة ${FC.idx+1} من ${FC.cards.length}`;document.getElementById('fc-q').textContent=c.q;document.getElementById('fc-a').textContent=c.a;document.getElementById('flip-inner').classList.remove('flipped');FC.flipped=false;}
+function flipCard(){FC.flipped=!FC.flipped;document.getElementById('flip-inner').classList.toggle('flipped',FC.flipped);}
+async function fcRate(r){
+  const ud=await getUD(CU.uid);ud.fcCount=(ud.fcCount||0)+1;
+  if(r==='easy'||r==='good'){ud.points=(ud.points||0)+2;toast('+2 نقطة ⭐','pts');}
+  await saveUD(CU.uid,ud);updateHomeStats();
+  if(FC.idx<FC.cards.length-1){FC.idx++;renderFC();}else{toast('أحسنت! خلصت البطاقات 🎉','ok');document.getElementById('fc-arena').classList.remove('on');}
+}
+
+// ══ QUESTION BANK ══
+let qbankData=[];
+let qbankSection='all', qbankGrade='all', qbankSubject='all';
+
+// ── BUILT-IN QUESTION BANK ──
+const BUILTIN_QBANK = [
+  // ══ رياضيات — أول ثانوي ══
+  {subject:'الرياضيات',grade:'1',section:'مشترك',unit:'الجبر',difficulty:'easy',question:'إذا كان f(x) = 2x + 3، فإن f(4) =',options:['8','10','11','12'],answer:2,explanation:'f(4) = 2×4 + 3 = 8 + 3 = 11'},
+  {subject:'الرياضيات',grade:'1',section:'مشترك',unit:'الهندسة',difficulty:'easy',question:'مساحة المثلث الذي قاعدته 8 سم وارتفاعه 5 سم تساوي',options:['20 سم²','40 سم²','13 سم²','80 سم²'],answer:0,explanation:'مساحة المثلث = ½ × القاعدة × الارتفاع = ½ × 8 × 5 = 20 سم²'},
+  {subject:'الرياضيات',grade:'1',section:'مشترك',unit:'الإحصاء',difficulty:'medium',question:'المتوسط الحسابي للأعداد: 4، 6، 8، 10، 12 يساوي',options:['7','8','9','10'],answer:1,explanation:'المجموع = 40 ÷ 5 = 8'},
+  {subject:'الرياضيات',grade:'1',section:'مشترك',unit:'الجبر',difficulty:'medium',question:'حل المعادلة: 3x - 7 = 8',options:['x = 3','x = 4','x = 5','x = 6'],answer:2,explanation:'3x = 15، إذن x = 5'},
+
+  // ══ رياضيات — تاني ثانوي ══
+  {subject:'الرياضيات',grade:'2',section:'علمي',unit:'المثلثات',difficulty:'medium',question:'قيمة sin 30° =',options:['√3/2','1/2','√2/2','1'],answer:1,explanation:'sin 30° = 1/2 من القيم الأساسية للمثلثات'},
+  {subject:'الرياضيات',grade:'2',section:'علمي',unit:'المثلثات',difficulty:'medium',question:'قيمة cos 60° =',options:['√3/2','1/2','0','1'],answer:1,explanation:'cos 60° = 1/2'},
+  {subject:'الرياضيات',grade:'2',section:'علمي',unit:'الجبر',difficulty:'hard',question:'إذا كان log₂8 = x، فإن x =',options:['2','3','4','8'],answer:1,explanation:'2³ = 8، إذن log₂8 = 3'},
+  {subject:'الرياضيات',grade:'2',section:'علمي',unit:'الهندسة التحليلية',difficulty:'medium',question:'ميل الخط الواصل بين النقطتين (1,2) و(3,6) يساوي',options:['1','2','3','4'],answer:1,explanation:'الميل = (6-2)/(3-1) = 4/2 = 2'},
+
+  // ══ رياضيات — تالت ثانوي ══
+  {subject:'الرياضيات',grade:'3',section:'علمي',unit:'التفاضل',difficulty:'hard',question:'مشتقة الدالة f(x) = x³ - 3x² + 2 هي',options:['3x² - 6x','3x² - 3x','x² - 6x','3x - 6'],answer:0,explanation:'بتطبيق قاعدة القوة: f\'(x) = 3x² - 6x'},
+  {subject:'الرياضيات',grade:'3',section:'علمي',unit:'التكامل',difficulty:'hard',question:'∫2x dx =',options:['x² + c','2x² + c','x + c','2 + c'],answer:0,explanation:'∫2x dx = x² + c بقاعدة التكامل'},
+
+  // ══ فيزياء — أول ثانوي ══
+  {subject:'الفيزياء',grade:'1',section:'علمي',unit:'الحركة',difficulty:'easy',question:'وحدة قياس السرعة في النظام الدولي هي',options:['m/s²','m/s','km/h','N'],answer:1,explanation:'وحدة السرعة = متر/ثانية (m/s)'},
+  {subject:'الفيزياء',grade:'1',section:'علمي',unit:'الحركة',difficulty:'medium',question:'جسم يتحرك بسرعة منتظمة 20 م/ث، المسافة التي يقطعها في 5 ثوانٍ',options:['4 م','25 م','100 م','15 م'],answer:2,explanation:'المسافة = السرعة × الزمن = 20 × 5 = 100 م'},
+  {subject:'الفيزياء',grade:'1',section:'علمي',unit:'القوى',difficulty:'medium',question:'قانون نيوتن الثاني: القوة المحصلة تساوي',options:['m/a','m+a','m×a','m-a'],answer:2,explanation:'F = m × a (القوة = الكتلة × التسارع)'},
+
+  // ══ فيزياء — تاني ثانوي ══
+  {subject:'الفيزياء',grade:'2',section:'علمي',unit:'الكهرباء',difficulty:'medium',question:'قانون أوم: العلاقة بين الجهد والتيار والمقاومة',options:['V = I/R','V = I×R','V = R/I','I = V×R'],answer:1,explanation:'V = I × R (الجهد = التيار × المقاومة)'},
+  {subject:'الفيزياء',grade:'2',section:'علمي',unit:'الكهرباء',difficulty:'hard',question:'مقاومتان قيمتهما 4Ω و 6Ω موصلتان على التوازي، المقاومة المكافئة =',options:['10Ω','2.4Ω','1.2Ω','5Ω'],answer:1,explanation:'1/R = 1/4 + 1/6 = 5/12، إذن R = 12/5 = 2.4Ω'},
+  {subject:'الفيزياء',grade:'2',section:'علمي',unit:'الموجات',difficulty:'medium',question:'سرعة الضوء في الفراغ تساوي تقريباً',options:['3×10⁶ م/ث','3×10⁸ م/ث','3×10¹⁰ م/ث','3×10⁴ م/ث'],answer:1,explanation:'سرعة الضوء c = 3×10⁸ م/ث'},
+
+  // ══ فيزياء — تالت ثانوي ══
+  {subject:'الفيزياء',grade:'3',section:'علمي',unit:'الفيزياء الحديثة',difficulty:'hard',question:'معادلة أينشتاين للطاقة هي',options:['E = mc','E = mc²','E = m/c²','E = m²c'],answer:1,explanation:'E = mc² حيث c سرعة الضوء'},
+  {subject:'الفيزياء',grade:'3',section:'علمي',unit:'الإلكترونيات',difficulty:'medium',question:'أي من التالي موصل شبه نقي؟',options:['الحديد','السيليكون','النحاس','الذهب'],answer:1,explanation:'السيليكون أشهر أشباه الموصلات المستخدمة في الإلكترونيات'},
+
+  // ══ كيمياء — أول ثانوي ══
+  {subject:'الكيمياء',grade:'1',section:'علمي',unit:'الجدول الدوري',difficulty:'easy',question:'العدد الذري للكربون هو',options:['6','8','12','14'],answer:0,explanation:'الكربون C عدده الذري 6 في الجدول الدوري'},
+  {subject:'الكيمياء',grade:'1',section:'علمي',unit:'الروابط الكيميائية',difficulty:'medium',question:'الرابطة التي تتكون بين ذرتي هيدروجين في جزيء H₂ هي',options:['رابطة أيونية','رابطة تساهمية','رابطة هيدروجينية','رابطة فلزية'],answer:1,explanation:'الرابطة بين ذرتين لافلزيتين متماثلتين هي رابطة تساهمية'},
+  {subject:'الكيمياء',grade:'1',section:'علمي',unit:'المادة',difficulty:'easy',question:'الصيغة الكيميائية لثاني أكسيد الكربون',options:['CO','CO₂','C₂O','C₂O₂'],answer:1,explanation:'ثاني أكسيد الكربون = CO₂'},
+
+  // ══ كيمياء — تاني ثانوي ══
+  {subject:'الكيمياء',grade:'2',section:'علمي',unit:'المحاليل',difficulty:'medium',question:'المحلول الذي pH < 7 يكون',options:['قلوي','حمضي','متعادل','مخفف'],answer:1,explanation:'pH < 7 يعني المحلول حمضي'},
+  {subject:'الكيمياء',grade:'2',section:'علمي',unit:'الكيمياء العضوية',difficulty:'medium',question:'الصيغة العامة للألكانات هي',options:['CₙH₂ₙ','CₙH₂ₙ₊₂','CₙH₂ₙ₋₂','CₙHₙ'],answer:1,explanation:'الألكانات سلسلة متجانسة صيغتها CₙH₂ₙ₊₂'},
+
+  // ══ كيمياء — تالت ثانوي ══
+  {subject:'الكيمياء',grade:'3',section:'علمي',unit:'الكهروكيمياء',difficulty:'hard',question:'في خلية التحليل الكهربائي، الأكسدة تحدث عند',options:['الكاثود','الأنود','كلاهما','لا شيء'],answer:1,explanation:'الأكسدة (فقد الإلكترونات) تحدث عند الأنود دائماً'},
+  {subject:'الكيمياء',grade:'3',section:'علمي',unit:'المعادلات الكيميائية',difficulty:'medium',question:'عند اتزان المعادلة: N₂ + H₂ → NH₃، معامل H₂ =',options:['1','2','3','4'],answer:2,explanation:'N₂ + 3H₂ → 2NH₃، معامل H₂ = 3'},
+
+  // ══ أحياء — أول ثانوي ══
+  {subject:'الأحياء',grade:'1',section:'علمي',unit:'الخلية',difficulty:'easy',question:'العضية المسؤولة عن تكوين الطاقة في الخلية هي',options:['النواة','الميتوكوندريا','الريبوسوم','الغشاء الخلوي'],answer:1,explanation:'الميتوكوندريا هي "محطة الطاقة" في الخلية'},
+  {subject:'الأحياء',grade:'1',section:'علمي',unit:'الخلية',difficulty:'easy',question:'الجزيء المسؤول عن حمل المعلومات الوراثية هو',options:['البروتين','الدهون','DNA','الكربوهيدرات'],answer:2,explanation:'الـ DNA (حمض الديوكسي ريبونيوكليك) يحمل المعلومات الوراثية'},
+  {subject:'الأحياء',grade:'1',section:'علمي',unit:'التغذية',difficulty:'medium',question:'عملية البناء الضوئي تحدث في',options:['الميتوكوندريا','البلاستيدات الخضراء','النواة','الفجوة العصارية'],answer:1,explanation:'البناء الضوئي يحدث في البلاستيدات الخضراء (الكلوروبلاست)'},
+
+  // ══ أحياء — تاني ثانوي ══
+  {subject:'الأحياء',grade:'2',section:'علمي',unit:'الوراثة',difficulty:'medium',question:'عدد الكروموسومات في الخلية الجسمية للإنسان',options:['23','46','44','48'],answer:1,explanation:'الخلية الجسمية للإنسان تحتوي على 46 كروموسوم (23 زوجاً)'},
+  {subject:'الأحياء',grade:'2',section:'علمي',unit:'الوراثة',difficulty:'hard',question:'إذا تزاوج أبوان كلاهما حامل لصفة متنحية، نسبة الأبناء المصابين',options:['0%','25%','50%','75%'],answer:1,explanation:'Aa × Aa → AA : 2Aa : aa، نسبة المصابين (aa) = 25%'},
+
+  // ══ أحياء — تالت ثانوي ══
+  {subject:'الأحياء',grade:'3',section:'علمي',unit:'التطور',difficulty:'medium',question:'صاحب نظرية الانتخاب الطبيعي هو',options:['لامارك','مندل','داروين','باستور'],answer:2,explanation:'تشارلز داروين صاحب نظرية التطور بالانتخاب الطبيعي'},
+
+  // ══ اللغة العربية — مشترك ══
+  {subject:'اللغة العربية',grade:'1',section:'مشترك',unit:'النحو',difficulty:'easy',question:'الفاعل في جملة "كتب الطالبُ الدرسَ" هو',options:['كتب','الطالب','الدرس','ال'],answer:1,explanation:'الفاعل هو "الطالبُ" لأنه من قام بفعل الكتابة'},
+  {subject:'اللغة العربية',grade:'1',section:'مشترك',unit:'النحو',difficulty:'medium',question:'المفعول به في جملة "قرأ علي القصةَ" هو',options:['قرأ','علي','القصة','ال'],answer:2,explanation:'المفعول به هو "القصة" لأنه ما وقع عليه فعل القراءة'},
+  {subject:'اللغة العربية',grade:'2',section:'مشترك',unit:'البلاغة',difficulty:'medium',question:'في قول الشاعر "وقفتُ كأنني شجرةٌ" الصورة البلاغية هي',options:['استعارة','تشبيه','كناية','جناس'],answer:1,explanation:'وجود أداة التشبيه "كأن" يجعلها تشبيهاً'},
+  {subject:'اللغة العربية',grade:'3',section:'مشترك',unit:'النحو',difficulty:'hard',question:'الجملة الفعلية الصحيحة هي',options:['الطالبُ نجحَ','نجحَ الطالبُ','نجحٌ الطالبُ','الطالبَ نجحَ'],answer:1,explanation:'الجملة الفعلية تبدأ بالفعل: "نجحَ الطالبُ"'},
+
+  // ══ اللغة الإنجليزية — مشترك ══
+  {subject:'اللغة الإنجليزية',grade:'1',section:'مشترك',unit:'Grammar',difficulty:'easy',question:'Choose the correct form: "She ___ to school every day."',options:['go','goes','going','gone'],answer:1,explanation:'"She" is third person singular, so we add "s" → goes'},
+  {subject:'اللغة الإنجليزية',grade:'2',section:'مشترك',unit:'Grammar',difficulty:'medium',question:'The past tense of "write" is',options:['writed','wrote','written','writes'],answer:1,explanation:'"Write" is an irregular verb, past tense = "wrote"'},
+  {subject:'اللغة الإنجليزية',grade:'3',section:'مشترك',unit:'Grammar',difficulty:'hard',question:'If I ___ you, I would study harder.',options:['am','was','were','be'],answer:2,explanation:'In second conditional, we use "were" for all subjects'},
+
+  // ══ التاريخ — مشترك ══
+  {subject:'التاريخ',grade:'1',section:'مشترك',unit:'تاريخ مصر القديمة',difficulty:'easy',question:'وحّد مصر العليا والسفلى في عهد الأسرة الأولى',options:['رمسيس الثاني','مينا (نارمر)','تحتمس الثالث','أحمس الأول'],answer:1,explanation:'مينا أو نارمر هو من وحّد القطرين وأسس الأسرة الأولى'},
+  {subject:'التاريخ',grade:'2',section:'مشترك',unit:'العصر الإسلامي',difficulty:'medium',question:'فتح العرب مصر على يد',options:['خالد بن الوليد','عمرو بن العاص','سعد بن أبي وقاص','أبو عبيدة'],answer:1,explanation:'عمرو بن العاص فتح مصر عام 641م في عهد الخليفة عمر بن الخطاب'},
+  {subject:'التاريخ',grade:'3',section:'مشترك',unit:'التاريخ الحديث',difficulty:'medium',question:'معركة عين جالوت عام 1260م انتصر فيها',options:['المغول','الصليبيون','المماليك','الأيوبيون'],answer:2,explanation:'انتصر المماليك بقيادة سيف الدين قطز على المغول في عين جالوت'},
+
+  // ══ الجغرافيا — مشترك ══
+  {subject:'الجغرافيا',grade:'1',section:'مشترك',unit:'الجغرافيا الطبيعية',difficulty:'easy',question:'أطول نهر في العالم هو',options:['الأمازون','النيل','الكونغو','المسيسيبي'],answer:1,explanation:'نهر النيل هو أطول أنهار العالم بطول حوالي 6650 كم'},
+  {subject:'الجغرافيا',grade:'2',section:'مشترك',unit:'جغرافيا مصر',difficulty:'medium',question:'أعلى قمة جبلية في مصر هي',options:['جبل الشيخ','جبل كاترين','جبل المقطم','جبل عتاقة'],answer:1,explanation:'جبل كاترين بسيناء هو أعلى قمة في مصر بارتفاع 2629م'},
+  {subject:'الجغرافيا',grade:'3',section:'مشترك',unit:'الجغرافيا الاقتصادية',difficulty:'medium',question:'القناة التي تربط البحر الأحمر بالبحر المتوسط هي',options:['قناة بنما','قناة السويس','مضيق هرمز','مضيق باب المندب'],answer:1,explanation:'قناة السويس المصرية تربط البحرين وتختصر طريق الملاحة العالمية'},
+
+  // ══ الفلسفة — أدبي ══
+  {subject:'الفلسفة',grade:'2',section:'أدبي',unit:'المنطق',difficulty:'medium',question:'القياس المنطقي الصحيح يتكون من',options:['مقدمتين ونتيجة','مقدمة واحدة ونتيجة','ثلاث نتائج','مقدمتين فقط'],answer:0,explanation:'القياس المنطقي = مقدمة كبرى + مقدمة صغرى + نتيجة'},
+  {subject:'الفلسفة',grade:'3',section:'أدبي',unit:'الفلسفة الغربية',difficulty:'hard',question:'صاحب مقولة "أنا أفكر إذن أنا موجود" هو',options:['أرسطو','أفلاطون','ديكارت','كانط'],answer:2,explanation:'رينيه ديكارت الفيلسوف الفرنسي صاحب هذه المقولة الشهيرة'},
+
+  // ══ علم الاجتماع — أدبي ══
+  {subject:'علم الاجتماع',grade:'2',section:'أدبي',unit:'المجتمع',difficulty:'easy',question:'أصغر وحدة في المجتمع الإنساني هي',options:['القبيلة','الأسرة','الفرد','القرية'],answer:1,explanation:'الأسرة هي النواة الأساسية والوحدة الأولى في المجتمع'},
+  {subject:'علم الاجتماع',grade:'3',section:'أدبي',unit:'التغير الاجتماعي',difficulty:'medium',question:'أب علم الاجتماع العربي هو',options:['ابن رشد','ابن سينا','ابن خلدون','الفارابي'],answer:2,explanation:'ابن خلدون صاحب المقدمة الشهيرة يُعد مؤسس علم الاجتماع'},
+
+  // ══ رياضيات إعدادي ══
+  {subject:'رياضيات إعدادي',grade:'1',section:'إعدادي',unit:'الأعداد',difficulty:'easy',question:'ناتج: 15 × 12 =',options:['170','180','190','160'],answer:1,explanation:'15 × 12 = 180'},
+  {subject:'رياضيات إعدادي',grade:'1',section:'إعدادي',unit:'الكسور',difficulty:'easy',question:'½ + ¼ =',options:['¾','⅔','1','½'],answer:0,explanation:'½ + ¼ = 2/4 + 1/4 = 3/4'},
+  {subject:'رياضيات إعدادي',grade:'2',section:'إعدادي',unit:'الجبر',difficulty:'medium',question:'حل: 2x + 6 = 14',options:['x=3','x=4','x=5','x=6'],answer:1,explanation:'2x = 14-6 = 8، إذن x = 4'},
+  {subject:'رياضيات إعدادي',grade:'2',section:'إعدادي',unit:'الهندسة',difficulty:'medium',question:'محيط المربع الذي طول ضلعه 7 سم =',options:['14 سم','21 سم','28 سم','49 سم'],answer:2,explanation:'محيط المربع = 4 × الضلع = 4 × 7 = 28 سم'},
+  {subject:'رياضيات إعدادي',grade:'3',section:'إعدادي',unit:'المثلثات',difficulty:'medium',question:'في مثلث قائم الزاوية، الوتر هو',options:['مجموع الضلعين','الضلع الأقصر','الضلع المقابل للزاوية القائمة','نصف المحيط'],answer:2,explanation:'الوتر هو الضلع المقابل للزاوية القائمة وهو أطول أضلاع المثلث القائم'},
+
+  // ══ علوم إعدادي ══
+  {subject:'علوم إعدادي',grade:'1',section:'إعدادي',unit:'المادة',difficulty:'easy',question:'أي من التالي مثال على التغيير الفيزيائي؟',options:['احتراق الخشب','صدأ الحديد','ذوبان الثلج','تعفن الطعام'],answer:2,explanation:'ذوبان الثلج تغيير فيزيائي لأن التركيب الكيميائي للماء لم يتغير'},
+  {subject:'علوم إعدادي',grade:'2',section:'إعدادي',unit:'الكهرباء',difficulty:'medium',question:'المادة التي تسمح بمرور التيار الكهربائي تسمى',options:['عازل','موصل','شبه موصل','مغناطيس'],answer:1,explanation:'الموصل هو المادة التي تسمح بمرور التيار الكهربائي بسهولة'},
+  {subject:'علوم إعدادي',grade:'2',section:'إعدادي',unit:'الأحياء',difficulty:'medium',question:'عملية التنفس الخلوي تحدث في',options:['النواة','الميتوكوندريا','الكلوروبلاست','الغشاء'],answer:1,explanation:'التنفس الخلوي يحدث في الميتوكوندريا لإنتاج الطاقة'},
+  {subject:'علوم إعدادي',grade:'3',section:'إعدادي',unit:'الموجات',difficulty:'medium',question:'الصوت لا ينتقل في',options:['الماء','الهواء','الفراغ','الحديد'],answer:2,explanation:'الصوت موجة ميكانيكية تحتاج وسطاً مادياً، لا تنتقل في الفراغ'},
+
+  // ══ تاريخ إعدادي ══
+  {subject:'تاريخ إعدادي',grade:'1',section:'إعدادي',unit:'مصر القديمة',difficulty:'easy',question:'بنيت الأهرامات الثلاثة الكبرى في عهد',options:['الدولة القديمة','الدولة الوسطى','الدولة الحديثة','العصر المتأخر'],answer:0,explanation:'الأهرامات بنيت في عصر الدولة القديمة (الأسرات 4-6)'},
+  {subject:'تاريخ إعدادي',grade:'3',section:'إعدادي',unit:'مصر الحديثة',difficulty:'medium',question:'من أسس الجيش المصري الحديث في القرن 19؟',options:['عباس الأول','محمد علي باشا','إسماعيل باشا','توفيق باشا'],answer:1,explanation:'محمد علي باشا أسس الجيش المصري الحديث'},
+
+  // ══ جغرافيا إعدادي ══
+  {subject:'جغرافيا إعدادي',grade:'1',section:'إعدادي',unit:'خريطة العالم',difficulty:'easy',question:'عدد قارات العالم',options:['5','6','7','8'],answer:2,explanation:'قارات العالم السبع: آسيا، أفريقيا، أمريكا الشمالية، أمريكا الجنوبية، أوروبا، أستراليا، القطب الجنوبي'},
+  {subject:'جغرافيا إعدادي',grade:'2',section:'إعدادي',unit:'جغرافيا مصر',difficulty:'medium',question:'يحد مصر من الشمال',options:['البحر الأحمر','البحر المتوسط','ليبيا','السودان'],answer:1,explanation:'يحد مصر من الشمال البحر الأبيض المتوسط'},
+
+  // ══ دراسات اجتماعية إعدادي ══
+  {subject:'دراسات اجتماعية',grade:'2',section:'إعدادي',unit:'المواطنة',difficulty:'easy',question:'الوثيقة الرسمية التي تحدد حقوق وواجبات المواطنين هي',options:['قانون العقوبات','الدستور','قانون الأحوال الشخصية','اللائحة الداخلية'],answer:1,explanation:'الدستور هو القانون الأساسي للدولة الذي يحدد الحقوق والواجبات'},
+  {subject:'دراسات اجتماعية',grade:'1',section:'إعدادي',unit:'المجتمع',difficulty:'easy',question:'أهم مصدر للمياه العذبة في مصر هو',options:['الأمطار','نهر النيل','المياه الجوفية','البحر المتوسط'],answer:1,explanation:'نهر النيل هو المصدر الرئيسي للمياه العذبة في مصر'},
+  {subject:'دراسات اجتماعية',grade:'3',section:'إعدادي',unit:'الاقتصاد',difficulty:'medium',question:'قناة السويس افتُتحت في عهد',options:['محمد علي','عباس الأول','سعيد باشا','إسماعيل باشا'],answer:3,explanation:'افتُتحت قناة السويس عام 1869م في عهد الخديوي إسماعيل'},
+
+  // ══ عربي إعدادي ══
+  {subject:'عربي إعدادي',grade:'1',section:'إعدادي',unit:'النحو',difficulty:'easy',question:'الفعل المضارع في جملة "يذهب الطلاب إلى المدرسة" هو',options:['الطلاب','يذهب','المدرسة','إلى'],answer:1,explanation:'الفعل المضارع هو "يذهب" لأنه يدل على حدث يقع الآن أو في المستقبل'},
+  {subject:'عربي إعدادي',grade:'1',section:'إعدادي',unit:'النحو',difficulty:'easy',question:'المبتدأ في جملة "العلمُ نورٌ" هو',options:['العلم','نور','الجملة كلها','لا يوجد'],answer:0,explanation:'المبتدأ هو "العلمُ" لأنه الاسم المرفوع في أول الجملة الاسمية'},
+  {subject:'عربي إعدادي',grade:'2',section:'إعدادي',unit:'الإملاء',difficulty:'medium',question:'الكلمة المكتوبة بشكل صحيح هي',options:['إستقبال','اِستقبال','استقبال','أستقبال'],answer:2,explanation:'كلمة "استقبال" تُكتب بهمزة وصل لأنها مصدر الفعل استقبل'},
+  {subject:'عربي إعدادي',grade:'2',section:'إعدادي',unit:'البلاغة',difficulty:'medium',question:'في عبارة "العلم شمعة تنير الطريق" الصورة البلاغية هي',options:['تشبيه','استعارة','كناية','جناس'],answer:0,explanation:'وجود أداة التشبيه (شمعة) تجعلها تشبيهاً مرسلاً'},
+  {subject:'عربي إعدادي',grade:'3',section:'إعدادي',unit:'النحو',difficulty:'medium',question:'علامة جزم الفعل المضارع الصحيح الآخر هي',options:['الفتحة','الضمة','السكون','الكسرة'],answer:2,explanation:'الفعل المضارع الصحيح الآخر يُجزم بالسكون'},
+  {subject:'عربي إعدادي',grade:'3',section:'إعدادي',unit:'الأدب',difficulty:'hard',question:'قصيدة "وطني لو شُغلتُ بالخلد عنه" لـ',options:['أحمد شوقي','حافظ إبراهيم','نزار قباني','محمود درويش'],answer:1,explanation:'هذه القصيدة الوطنية الشهيرة للشاعر حافظ إبراهيم شاعر النيل'},
+
+  // ══ إنجليزي إعدادي ══
+  {subject:'إنجليزي إعدادي',grade:'1',section:'إعدادي',unit:'Grammar',difficulty:'easy',question:'The plural of "child" is',options:['childs','childes','children','child'],answer:2,explanation:'"Child" has an irregular plural: children'},
+  {subject:'إنجليزي إعدادي',grade:'1',section:'إعدادي',unit:'Vocabulary',difficulty:'easy',question:'The opposite of "hot" is',options:['warm','cold','cool','mild'],answer:1,explanation:'The opposite of hot is cold'},
+  {subject:'إنجليزي إعدادي',grade:'2',section:'إعدادي',unit:'Grammar',difficulty:'medium',question:'Choose the correct: "I ___ my homework yesterday."',options:['do','does','did','done'],answer:2,explanation:'Yesterday shows past tense, so we use "did" (past simple of do)'},
+  {subject:'إنجليزي إعدادي',grade:'2',section:'إعدادي',unit:'Grammar',difficulty:'medium',question:'The comparative of "good" is',options:['gooder','more good','better','best'],answer:2,explanation:'"Good" has an irregular comparative: better'},
+  {subject:'إنجليزي إعدادي',grade:'3',section:'إعدادي',unit:'Grammar',difficulty:'medium',question:'"She has lived in Cairo ___ 2010."',options:['for','since','ago','before'],answer:1,explanation:'We use "since" with a specific point in time (2010)'},
+  {subject:'إنجليزي إعدادي',grade:'3',section:'إعدادي',unit:'Grammar',difficulty:'hard',question:'The passive form of "They built the bridge" is',options:['The bridge built','The bridge was built','The bridge is built','The bridge were built'],answer:1,explanation:'Past passive = was/were + past participle: The bridge was built'},
+
+  // ══ رياضيات إعدادي — إضافة ══
+  {subject:'رياضيات إعدادي',grade:'1',section:'إعدادي',unit:'النسبة والتناسب',difficulty:'medium',question:'إذا كانت نسبة البنين إلى البنات 3:2 وعدد البنات 20، فعدد البنين',options:['15','25','30','40'],answer:2,explanation:'3/2 = x/20، إذن x = 30'},
+  {subject:'رياضيات إعدادي',grade:'2',section:'إعدادي',unit:'الأعداد الصحيحة',difficulty:'medium',question:'ناتج: (-3) × (-4) =',options:['-12','-7','7','12'],answer:3,explanation:'سالب × سالب = موجب، إذن (-3) × (-4) = 12'},
+  {subject:'رياضيات إعدادي',grade:'3',section:'إعدادي',unit:'الإحصاء',difficulty:'medium',question:'الوسيط للأعداد: 3، 5، 7، 9، 11 هو',options:['5','7','9','6'],answer:1,explanation:'الوسيط هو العدد الأوسط في التسلسل المرتب = 7'},
+
+  // ══ علوم إعدادي — إضافة ══
+  {subject:'علوم إعدادي',grade:'1',section:'إعدادي',unit:'الخلية',difficulty:'easy',question:'وحدة البناء الأساسية في الكائنات الحية هي',options:['الأنسجة','الخلية','الجهاز','العضو'],answer:1,explanation:'الخلية هي الوحدة الأساسية في بناء الكائنات الحية'},
+  {subject:'علوم إعدادي',grade:'3',section:'إعدادي',unit:'الكيمياء',difficulty:'medium',question:'الصيغة الكيميائية للماء هي',options:['CO₂','H₂O','O₂','NaCl'],answer:1,explanation:'الماء يتكون من ذرتي هيدروجين وذرة أكسجين: H₂O'},
+  {subject:'علوم إعدادي',grade:'3',section:'إعدادي',unit:'الفيزياء',difficulty:'medium',question:'وحدة قياس القوة في النظام الدولي هي',options:['كيلوجرام','جول','نيوتن','واط'],answer:2,explanation:'وحدة القوة هي النيوتن (N) نسبة للعالم إسحاق نيوتن'},
+
+  // ══ رياضيات ابتدائي ══
+
+  // ══ تجريبي إعدادي ══
+  {subject:'Mathematics (Prep Exp)',grade:'1',section:'تجريبي إعدادي',unit:'Numbers',difficulty:'easy',question:'What is the result of: 15 × 12?',options:['160','170','180','190'],answer:2,explanation:'15 × 12 = 180'},
+  {subject:'Mathematics (Prep Exp)',grade:'2',section:'تجريبي إعدادي',unit:'Algebra',difficulty:'medium',question:'Solve: 2x + 6 = 14',options:['x=3','x=4','x=5','x=6'],answer:1,explanation:'2x = 14 - 6 = 8, so x = 4'},
+  {subject:'Mathematics (Prep Exp)',grade:'2',section:'تجريبي إعدادي',unit:'Geometry',difficulty:'medium',question:'The perimeter of a square with side 7 cm =',options:['14 cm','21 cm','28 cm','49 cm'],answer:2,explanation:'Perimeter of square = 4 × side = 4 × 7 = 28 cm'},
+  {subject:'Mathematics (Prep Exp)',grade:'3',section:'تجريبي إعدادي',unit:'Geometry',difficulty:'medium',question:'In a right-angled triangle, the hypotenuse is',options:['Sum of two sides','The shortest side','The side opposite the right angle','Half the perimeter'],answer:2,explanation:'The hypotenuse is the side opposite the right angle and is the longest side'},
+  {subject:'Mathematics (Prep Exp)',grade:'3',section:'تجريبي إعدادي',unit:'Statistics',difficulty:'medium',question:'The median of: 3, 5, 7, 9, 11 is',options:['5','7','9','6'],answer:1,explanation:'The median is the middle value in an ordered sequence = 7'},
+
+  {subject:'Science (Prep Exp)',grade:'1',section:'تجريبي إعدادي',unit:'Matter',difficulty:'easy',question:'Which of the following is an example of a physical change?',options:['Burning wood','Rusting iron','Melting ice','Rotting food'],answer:2,explanation:'Melting ice is physical — the chemical composition of water does not change'},
+  {subject:'Science (Prep Exp)',grade:'2',section:'تجريبي إعدادي',unit:'Electricity',difficulty:'medium',question:'A material that allows electric current to flow through it is called a',options:['Insulator','Conductor','Semiconductor','Magnet'],answer:1,explanation:'A conductor allows electric current to flow easily through it'},
+  {subject:'Science (Prep Exp)',grade:'3',section:'تجريبي إعدادي',unit:'Waves',difficulty:'medium',question:'Sound cannot travel through',options:['Water','Air','Vacuum','Iron'],answer:2,explanation:'Sound is a mechanical wave that needs a medium — it cannot travel through a vacuum'},
+  {subject:'Science (Prep Exp)',grade:'3',section:'تجريبي إعدادي',unit:'Chemistry',difficulty:'medium',question:'The chemical formula of water is',options:['CO₂','H₂O','O₂','NaCl'],answer:1,explanation:'Water consists of 2 hydrogen atoms and 1 oxygen atom: H₂O'},
+
+  {subject:'English (Prep Exp)',grade:'1',section:'تجريبي إعدادي',unit:'Grammar',difficulty:'easy',question:'The plural of "child" is',options:['childs','childes','children','child'],answer:2,explanation:'"Child" has an irregular plural: children'},
+  {subject:'English (Prep Exp)',grade:'2',section:'تجريبي إعدادي',unit:'Grammar',difficulty:'medium',question:'Choose the correct: "I ___ my homework yesterday."',options:['do','does','did','done'],answer:2,explanation:'Yesterday indicates past tense → "did"'},
+  {subject:'English (Prep Exp)',grade:'3',section:'تجريبي إعدادي',unit:'Grammar',difficulty:'medium',question:'The passive form of "They built the bridge" is',options:['The bridge built','The bridge was built','The bridge is built','The bridge were built'],answer:1,explanation:'Past passive = was/were + past participle'},
+
+  {subject:'Social Studies (Prep Exp)',grade:'1',section:'تجريبي إعدادي',unit:'Geography',difficulty:'easy',question:'How many continents are there in the world?',options:['5','6','7','8'],answer:2,explanation:'The 7 continents: Asia, Africa, North America, South America, Europe, Australia, Antarctica'},
+  {subject:'Social Studies (Prep Exp)',grade:'2',section:'تجريبي إعدادي',unit:'History',difficulty:'medium',question:'Who founded the modern Egyptian army in the 19th century?',options:['Abbas I','Muhammad Ali Pasha','Khedive Ismail','Khedive Tewfik'],answer:1,explanation:'Muhammad Ali Pasha founded the modern Egyptian army'},
+  {subject:'Social Studies (Prep Exp)',grade:'3',section:'تجريبي إعدادي',unit:'Civics',difficulty:'easy',question:'The official document that defines citizens\' rights and duties is',options:['Penal Code','Constitution','Civil Law','Internal Regulation'],answer:1,explanation:'The constitution is the fundamental law of the state that defines rights and duties'},
+
+  // ══ تجريبي ابتدائي ══
+  {subject:'Mathematics (Pri Exp)',grade:'4',section:'تجريبي ابتدائي',unit:'Multiplication',difficulty:'easy',question:'What is 6 × 7?',options:['42','48','36','54'],answer:0,explanation:'6 × 7 = 42'},
+  {subject:'Mathematics (Pri Exp)',grade:'4',section:'تجريبي ابتدائي',unit:'Addition',difficulty:'easy',question:'235 + 148 =',options:['373','383','384','374'],answer:1,explanation:'235 + 148 = 383'},
+  {subject:'Mathematics (Pri Exp)',grade:'5',section:'تجريبي ابتدائي',unit:'Fractions',difficulty:'medium',question:'¼ + ¼ =',options:['½','¾','1','⅓'],answer:0,explanation:'¼ + ¼ = 2/4 = ½'},
+  {subject:'Mathematics (Pri Exp)',grade:'5',section:'تجريبي ابتدائي',unit:'Division',difficulty:'easy',question:'144 ÷ 12 =',options:['10','11','12','13'],answer:2,explanation:'144 ÷ 12 = 12'},
+  {subject:'Mathematics (Pri Exp)',grade:'6',section:'تجريبي ابتدائي',unit:'Geometry',difficulty:'medium',question:'The area of a rectangle with length 8 cm and width 5 cm =',options:['13 cm²','26 cm²','40 cm²','45 cm²'],answer:2,explanation:'Area = length × width = 8 × 5 = 40 cm²'},
+  {subject:'Mathematics (Pri Exp)',grade:'6',section:'تجريبي ابتدائي',unit:'Statistics',difficulty:'medium',question:'The average of 10, 20, 30 =',options:['15','20','25','30'],answer:1,explanation:'Average = (10+20+30) ÷ 3 = 60 ÷ 3 = 20'},
+
+  {subject:'Science (Pri Exp)',grade:'4',section:'تجريبي ابتدائي',unit:'Plants',difficulty:'easy',question:'The process by which plants make their food is called',options:['Respiration','Photosynthesis','Digestion','Reproduction'],answer:1,explanation:'Plants make food from water, CO₂ and sunlight through photosynthesis'},
+  {subject:'Science (Pri Exp)',grade:'4',section:'تجريبي ابتدائي',unit:'Space',difficulty:'easy',question:'Which planet is closest to the Sun?',options:['Venus','Mercury','Earth','Mars'],answer:1,explanation:'Mercury is the closest planet to the Sun'},
+  {subject:'Science (Pri Exp)',grade:'5',section:'تجريبي ابتدائي',unit:'Human Body',difficulty:'easy',question:'The largest organ in the human body is',options:['Liver','Heart','Skin','Lung'],answer:2,explanation:'The skin is the largest organ of the human body'},
+  {subject:'Science (Pri Exp)',grade:'6',section:'تجريبي ابتدائي',unit:'Environment',difficulty:'medium',question:'Which of the following is a renewable energy source?',options:['Coal','Oil','Solar energy','Natural gas'],answer:2,explanation:'Solar energy is renewable because the Sun does not run out'},
+
+  {subject:'English (Pri Exp)',grade:'4',section:'تجريبي ابتدائي',unit:'Grammar',difficulty:'easy',question:'"I ___ a student." Choose the correct verb.',options:['is','am','are','be'],answer:1,explanation:'With "I" we use "am": I am a student'},
+  {subject:'English (Pri Exp)',grade:'4',section:'تجريبي ابتدائي',unit:'Vocabulary',difficulty:'easy',question:'What color is the sky?',options:['Red','Green','Blue','Yellow'],answer:2,explanation:'The sky is blue'},
+  {subject:'English (Pri Exp)',grade:'5',section:'تجريبي ابتدائي',unit:'Grammar',difficulty:'easy',question:'The plural of "book" is',options:['books','bookes','bookies','book'],answer:0,explanation:'Regular plural: book → books'},
+  {subject:'English (Pri Exp)',grade:'6',section:'تجريبي ابتدائي',unit:'Grammar',difficulty:'medium',question:'"There ___ many students in the class."',options:['is','am','are','be'],answer:2,explanation:'With plural nouns we use "are"'},
+
+  {subject:'Social Studies (Pri Exp)',grade:'4',section:'تجريبي ابتدائي',unit:'Geography',difficulty:'easy',question:'What is the capital of Egypt?',options:['Alexandria','Cairo','Giza','Luxor'],answer:1,explanation:'Cairo is the capital of the Arab Republic of Egypt'},
+  {subject:'Social Studies (Pri Exp)',grade:'5',section:'تجريبي ابتدائي',unit:'History',difficulty:'easy',question:'Who built the Pyramids?',options:['Romans','Greeks','Ancient Egyptians','Arabs'],answer:2,explanation:'Ancient Egyptians built the pyramids thousands of years ago'},
+  {subject:'Social Studies (Pri Exp)',grade:'6',section:'تجريبي ابتدائي',unit:'History',difficulty:'medium',question:'The Suez Canal was opened in',options:['1859','1869','1879','1889'],answer:1,explanation:'The Suez Canal was opened in 1869 during the reign of Khedive Ismail'},
+
+
+
+  // ══ EXPERIMENTAL LANGUAGE SCHOOL ══
+  // Mathematics (Exp)
+  {subject:'Mathematics (Exp)',grade:'1',section:'تجريبي',unit:'Algebra',difficulty:'easy',question:'If f(x) = 3x + 2, then f(3) =',options:['9','10','11','12'],answer:2,explanation:'f(3) = 3(3) + 2 = 9 + 2 = 11'},
+  {subject:'Mathematics (Exp)',grade:'2',section:'تجريبي',unit:'Trigonometry',difficulty:'medium',question:'The value of sin 90° =',options:['0','½','√2/2','1'],answer:3,explanation:'sin 90° = 1, one of the fundamental trigonometric values'},
+  {subject:'Mathematics (Exp)',grade:'2',section:'تجريبي',unit:'Coordinate Geometry',difficulty:'medium',question:'The slope of the line passing through (2,4) and (4,8) is',options:['1','2','3','4'],answer:1,explanation:'slope = (8-4)/(4-2) = 4/2 = 2'},
+  {subject:'Mathematics (Exp)',grade:'3',section:'تجريبي',unit:'Calculus',difficulty:'hard',question:'The derivative of f(x) = x⁴ - 2x² is',options:['4x³ - 4x','4x³ - 2x','x³ - 4x','4x - 4'],answer:0,explanation:'f\'(x) = 4x³ - 4x using the power rule'},
+  {subject:'Mathematics (Exp)',grade:'3',section:'تجريبي',unit:'Integration',difficulty:'hard',question:'∫(3x²)dx =',options:['x³ + c','3x³ + c','6x + c','x² + c'],answer:0,explanation:'∫3x² dx = x³ + c by the reverse power rule'},
+
+  // Physics (Exp)
+  {subject:'Physics (Exp)',grade:'1',section:'تجريبي',unit:'Motion',difficulty:'easy',question:'The SI unit of velocity is',options:['m/s²','m/s','km/h','N'],answer:1,explanation:'The SI unit of velocity is metres per second (m/s)'},
+  {subject:'Physics (Exp)',grade:'1',section:'تجريبي',unit:'Forces',difficulty:'medium',question:'Newton\'s Second Law states that F =',options:['m/a','m+a','m×a','m-a'],answer:2,explanation:'F = m × a (Force = mass × acceleration)'},
+  {subject:'Physics (Exp)',grade:'2',section:'تجريبي',unit:'Electricity',difficulty:'medium',question:'Ohm\'s Law states that V =',options:['I/R','I×R','R/I','I+R'],answer:1,explanation:'V = I × R (Voltage = Current × Resistance)'},
+  {subject:'Physics (Exp)',grade:'2',section:'تجريبي',unit:'Waves',difficulty:'medium',question:'The speed of light in a vacuum is approximately',options:['3×10⁶ m/s','3×10⁸ m/s','3×10¹⁰ m/s','3×10⁴ m/s'],answer:1,explanation:'Speed of light c ≈ 3×10⁸ m/s'},
+  {subject:'Physics (Exp)',grade:'3',section:'تجريبي',unit:'Modern Physics',difficulty:'hard',question:'Einstein\'s mass-energy equivalence equation is',options:['E = mc','E = mc²','E = m/c²','E = m²c'],answer:1,explanation:'E = mc² where c is the speed of light'},
+
+  // Chemistry (Exp)
+  {subject:'Chemistry (Exp)',grade:'1',section:'تجريبي',unit:'Atomic Structure',difficulty:'easy',question:'The atomic number of Carbon is',options:['4','6','8','12'],answer:1,explanation:'Carbon (C) has atomic number 6 in the periodic table'},
+  {subject:'Chemistry (Exp)',grade:'1',section:'تجريبي',unit:'Chemical Bonding',difficulty:'medium',question:'The bond between two hydrogen atoms in H₂ is',options:['Ionic','Covalent','Hydrogen','Metallic'],answer:1,explanation:'A bond between two identical non-metal atoms is a covalent bond'},
+  {subject:'Chemistry (Exp)',grade:'2',section:'تجريبي',unit:'Solutions',difficulty:'medium',question:'A solution with pH < 7 is classified as',options:['Alkaline','Acidic','Neutral','Neutral salt'],answer:1,explanation:'pH < 7 indicates an acidic solution'},
+  {subject:'Chemistry (Exp)',grade:'2',section:'تجريبي',unit:'Organic Chemistry',difficulty:'medium',question:'The general formula for Alkanes is',options:['CₙH₂ₙ','CₙH₂ₙ₊₂','CₙH₂ₙ₋₂','CₙHₙ'],answer:1,explanation:'Alkanes have the general formula CₙH₂ₙ₊₂'},
+  {subject:'Chemistry (Exp)',grade:'3',section:'تجريبي',unit:'Electrochemistry',difficulty:'hard',question:'In electrolysis, oxidation occurs at the',options:['Cathode','Anode','Both electrodes','Neither'],answer:1,explanation:'Oxidation (loss of electrons) always occurs at the anode'},
+
+  // Biology (Exp)
+  {subject:'Biology (Exp)',grade:'1',section:'تجريبي',unit:'Cell Biology',difficulty:'easy',question:'The organelle responsible for energy production is the',options:['Nucleus','Mitochondria','Ribosome','Cell membrane'],answer:1,explanation:'Mitochondria is the "powerhouse of the cell"'},
+  {subject:'Biology (Exp)',grade:'1',section:'تجريبي',unit:'Cell Biology',difficulty:'easy',question:'Photosynthesis takes place in the',options:['Mitochondria','Chloroplast','Nucleus','Vacuole'],answer:1,explanation:'Photosynthesis occurs in the chloroplasts'},
+  {subject:'Biology (Exp)',grade:'2',section:'تجريبي',unit:'Genetics',difficulty:'medium',question:'The number of chromosomes in a human body cell is',options:['23','44','46','48'],answer:2,explanation:'Human body cells contain 46 chromosomes (23 pairs)'},
+  {subject:'Biology (Exp)',grade:'2',section:'تجريبي',unit:'Genetics',difficulty:'hard',question:'If two carriers (Aa × Aa) mate, the probability of affected offspring is',options:['0%','25%','50%','75%'],answer:1,explanation:'Aa × Aa → AA:2Aa:aa, so 25% are affected (aa)'},
+  {subject:'Biology (Exp)',grade:'3',section:'تجريبي',unit:'Evolution',difficulty:'medium',question:'The theory of Natural Selection was proposed by',options:['Lamarck','Mendel','Darwin','Pasteur'],answer:2,explanation:'Charles Darwin proposed the theory of evolution by natural selection'},
+
+  // History (Exp)
+  {subject:'History (Exp)',grade:'1',section:'تجريبي',unit:'Ancient Egypt',difficulty:'easy',question:'The Great Pyramids of Giza were built during the',options:['Old Kingdom','Middle Kingdom','New Kingdom','Late Period'],answer:0,explanation:'The pyramids were built during the Old Kingdom (Dynasties 4-6)'},
+  {subject:'History (Exp)',grade:'2',section:'تجريبي',unit:'Islamic Egypt',difficulty:'medium',question:'Egypt was conquered by the Arabs under the command of',options:['Khalid ibn al-Walid','Amr ibn al-As','Saladin','Omar ibn al-Khattab'],answer:1,explanation:'Amr ibn al-As conquered Egypt in 641 AD'},
+  {subject:'History (Exp)',grade:'3',section:'تجريبي',unit:'Modern History',difficulty:'medium',question:'The Battle of Ain Jalut in 1260 AD was won by',options:['Mongols','Crusaders','Mamluks','Ayyubids'],answer:2,explanation:'The Mamluks under Qutuz defeated the Mongols at Ain Jalut'},
+
+  // Geography (Exp)
+  {subject:'Geography (Exp)',grade:'1',section:'تجريبي',unit:'Physical Geography',difficulty:'easy',question:'The longest river in the world is',options:['Amazon','Nile','Congo','Mississippi'],answer:1,explanation:'The Nile River is the longest river in the world at ~6,650 km'},
+  {subject:'Geography (Exp)',grade:'2',section:'تجريبي',unit:'Egypt\'s Geography',difficulty:'medium',question:'Egypt\'s highest mountain peak is',options:['Mount Sheikh','Mount Catherine','Mount Mokattam','Mount Attaka'],answer:1,explanation:'Mount Catherine in Sinai is Egypt\'s highest peak at 2,629m'},
+  {subject:'Geography (Exp)',grade:'3',section:'تجريبي',unit:'Economic Geography',difficulty:'medium',question:'The canal connecting the Red Sea to the Mediterranean Sea is',options:['Panama Canal','Suez Canal','Strait of Hormuz','Bab el-Mandeb'],answer:1,explanation:'The Egyptian Suez Canal connects the two seas and shortens global shipping routes'},
+
+  // Philosophy (Exp)
+  {subject:'Philosophy (Exp)',grade:'2',section:'تجريبي',unit:'Logic',difficulty:'medium',question:'A valid syllogism consists of',options:['Two premises and a conclusion','One premise and a conclusion','Three conclusions','Two premises only'],answer:0,explanation:'A syllogism = major premise + minor premise + conclusion'},
+  {subject:'Philosophy (Exp)',grade:'3',section:'تجريبي',unit:'Western Philosophy',difficulty:'hard',question:'The philosopher who said "I think, therefore I am" is',options:['Aristotle','Plato','Descartes','Kant'],answer:2,explanation:'René Descartes, the French philosopher, coined this famous statement'},
+
+  // English Language (Exp — advanced)
+  {subject:'English Language',grade:'1',section:'تجريبي',unit:'Grammar',difficulty:'medium',question:'Choose the correct sentence:',options:['She don\'t like coffee','She doesn\'t likes coffee','She doesn\'t like coffee','She not like coffee'],answer:2,explanation:'With third person singular "she", we use "doesn\'t" + base verb'},
+  {subject:'English Language',grade:'2',section:'تجريبي',unit:'Grammar',difficulty:'medium',question:'"By the time he arrived, the meeting ___ already started."',options:['had','has','have','was'],answer:0,explanation:'Past perfect: had + past participle — action completed before another past action'},
+  {subject:'English Language',grade:'3',section:'تجريبي',unit:'Grammar',difficulty:'hard',question:'"The book ___ by J.K. Rowling is very popular."',options:['write','written','wrote','was writing'],answer:1,explanation:'Passive participle used as adjective: written by J.K. Rowling'},
+
+
+  {subject:'رياضيات ابتدائي',grade:'4',section:'ابتدائي',unit:'الضرب',difficulty:'easy',question:'ناتج: 6 × 7 =',options:['42','48','36','54'],answer:0,explanation:'6 × 7 = 42'},
+  {subject:'رياضيات ابتدائي',grade:'5',section:'ابتدائي',unit:'الكسور',difficulty:'easy',question:'¼ + ¼ =',options:['½','¾','1','⅓'],answer:0,explanation:'¼ + ¼ = 2/4 = ½'},
+  {subject:'رياضيات ابتدائي',grade:'6',section:'ابتدائي',unit:'الهندسة',difficulty:'medium',question:'مساحة المستطيل طوله 8 سم وعرضه 5 سم =',options:['13 سم²','26 سم²','40 سم²','45 سم²'],answer:2,explanation:'مساحة المستطيل = الطول × العرض = 8 × 5 = 40 سم²'},
+
+  // ══ علوم ابتدائي ══
+  {subject:'علوم ابتدائي',grade:'4',section:'ابتدائي',unit:'الكائنات الحية',difficulty:'easy',question:'عملية صنع الغذاء في النبات تسمى',options:['التنفس','البناء الضوئي','الهضم','التكاثر'],answer:1,explanation:'النبات يصنع غذاءه من الماء وثاني أكسيد الكربون والضوء في عملية البناء الضوئي'},
+  {subject:'علوم ابتدائي',grade:'5',section:'ابتدائي',unit:'الفضاء',difficulty:'easy',question:'أقرب كوكب للشمس هو',options:['الزهرة','عطارد','الأرض','المريخ'],answer:1,explanation:'عطارد هو أقرب الكواكب للشمس في المجموعة الشمسية'},
+  {subject:'علوم ابتدائي',grade:'6',section:'ابتدائي',unit:'الصحة',difficulty:'easy',question:'الفيتامين الذي يحميك من الكساح هو',options:['فيتامين أ','فيتامين ب','فيتامين ج','فيتامين د'],answer:3,explanation:'فيتامين د ضروري لامتصاص الكالسيوم والوقاية من الكساح'},
+
+  // ══ رياضيات ابتدائي — إضافة ══
+  {subject:'رياضيات ابتدائي',grade:'4',section:'ابتدائي',unit:'الجمع',difficulty:'easy',question:'ناتج: 235 + 148 =',options:['373','383','384','374'],answer:1,explanation:'235 + 148 = 383'},
+  {subject:'رياضيات ابتدائي',grade:'4',section:'ابتدائي',unit:'الطرح',difficulty:'easy',question:'ناتج: 500 - 237 =',options:['263','273','253','283'],answer:0,explanation:'500 - 237 = 263'},
+  {subject:'رياضيات ابتدائي',grade:'5',section:'ابتدائي',unit:'الضرب',difficulty:'easy',question:'ناتج: 24 × 5 =',options:['100','110','120','130'],answer:2,explanation:'24 × 5 = 120'},
+  {subject:'رياضيات ابتدائي',grade:'5',section:'ابتدائي',unit:'القسمة',difficulty:'easy',question:'ناتج: 144 ÷ 12 =',options:['10','11','12','13'],answer:2,explanation:'144 ÷ 12 = 12'},
+  {subject:'رياضيات ابتدائي',grade:'5',section:'ابتدائي',unit:'الكسور',difficulty:'medium',question:'أكبر كسر من: ½، ¾، ⅓',options:['½','¾','⅓','متساوية'],answer:1,explanation:'¾ = 0.75 وهو أكبر من ½ = 0.5 وأكبر من ⅓ = 0.33'},
+  {subject:'رياضيات ابتدائي',grade:'6',section:'ابتدائي',unit:'الأعداد العشرية',difficulty:'medium',question:'ناتج: 3.5 + 2.7 =',options:['5.2','6.2','6.12','5.12'],answer:1,explanation:'3.5 + 2.7 = 6.2'},
+  {subject:'رياضيات ابتدائي',grade:'6',section:'ابتدائي',unit:'الهندسة',difficulty:'medium',question:'محيط المثلث المتساوي الأضلاع الذي طول ضلعه 6 سم =',options:['12 سم','18 سم','24 سم','36 سم'],answer:1,explanation:'محيط المثلث المتساوي الأضلاع = 3 × الضلع = 3 × 6 = 18 سم'},
+  {subject:'رياضيات ابتدائي',grade:'6',section:'ابتدائي',unit:'الإحصاء',difficulty:'medium',question:'متوسط الأعداد: 10، 20، 30 =',options:['15','20','25','30'],answer:1,explanation:'المتوسط = (10+20+30) ÷ 3 = 60 ÷ 3 = 20'},
+
+  // ══ علوم ابتدائي — إضافة ══
+  {subject:'علوم ابتدائي',grade:'4',section:'ابتدائي',unit:'المادة',difficulty:'easy',question:'الماء في حالته الغازية يسمى',options:['ثلج','ماء','بخار','صلب'],answer:2,explanation:'الماء في الحالة الغازية = بخار الماء'},
+  {subject:'علوم ابتدائي',grade:'4',section:'ابتدائي',unit:'الحواس',difficulty:'easy',question:'عضو الإبصار في جسم الإنسان هو',options:['الأذن','العين','الأنف','اللسان'],answer:1,explanation:'العين هي عضو الإبصار (الرؤية)'},
+  {subject:'علوم ابتدائي',grade:'5',section:'ابتدائي',unit:'النبات',difficulty:'easy',question:'الجزء الذي يمتص الماء من التربة في النبات هو',options:['الساق','الأوراق','الجذر','الزهرة'],answer:2,explanation:'الجذر يمتص الماء والأملاح المعدنية من التربة'},
+  {subject:'علوم ابتدائي',grade:'5',section:'ابتدائي',unit:'الفضاء',difficulty:'easy',question:'الكوكب الذي نعيش عليه هو',options:['المريخ','الزهرة','الأرض','زحل'],answer:2,explanation:'نحن نعيش على كوكب الأرض، الكوكب الثالث في المجموعة الشمسية'},
+  {subject:'علوم ابتدائي',grade:'6',section:'ابتدائي',unit:'الجسم',difficulty:'easy',question:'أكبر عضو في جسم الإنسان هو',options:['الكبد','القلب','الجلد','الرئة'],answer:2,explanation:'الجلد هو أكبر عضو في جسم الإنسان'},
+  {subject:'علوم ابتدائي',grade:'6',section:'ابتدائي',unit:'البيئة',difficulty:'medium',question:'أي من التالي مصدر للطاقة المتجددة؟',options:['الفحم','البترول','الطاقة الشمسية','الغاز الطبيعي'],answer:2,explanation:'الطاقة الشمسية متجددة لأن الشمس لا تنضب، عكس الوقود الأحفوري'},
+
+  // ══ عربي ابتدائي ══
+  {subject:'عربي ابتدائي',grade:'4',section:'ابتدائي',unit:'الحروف',difficulty:'easy',question:'كم عدد حروف اللغة العربية؟',options:['26','28','29','30'],answer:1,explanation:'حروف اللغة العربية 28 حرفاً'},
+  {subject:'عربي ابتدائي',grade:'4',section:'ابتدائي',unit:'الكلمة',difficulty:'easy',question:'أقسام الكلمة في اللغة العربية',options:['اسم وفعل','اسم وفعل وحرف','فعل وحرف','اسم وحرف'],answer:1,explanation:'الكلمة ثلاثة أقسام: اسم وفعل وحرف'},
+  {subject:'عربي ابتدائي',grade:'5',section:'ابتدائي',unit:'النحو',difficulty:'easy',question:'الاسم في جملة "الشمسُ مشرقةٌ" هو',options:['مشرقة','الشمس','الجملة كلها','لا اسم'],answer:1,explanation:'الشمس اسم لأنه يدل على شيء محسوس'},
+  {subject:'عربي ابتدائي',grade:'5',section:'ابتدائي',unit:'الإملاء',difficulty:'medium',question:'التنوين يُكتب على',options:['الحرف الأخير فقط','الحرف الأول','كل الحروف','لا يُكتب'],answer:0,explanation:'التنوين يكون على الحرف الأخير من الكلمة المنونة'},
+  {subject:'عربي ابتدائي',grade:'6',section:'ابتدائي',unit:'النحو',difficulty:'medium',question:'الضمير في كلمة "كتبتُ" هو',options:['كتب','تُ','ت','لا ضمير'],answer:1,explanation:'"تُ" ضمير متصل يدل على المتكلم المفرد'},
+  {subject:'عربي ابتدائي',grade:'6',section:'ابتدائي',unit:'الأدب',difficulty:'easy',question:'الشعر يختلف عن النثر في',options:['الموضوع','الوزن والقافية','اللغة','الكاتب'],answer:1,explanation:'الشعر يتميز بالوزن والقافية عكس النثر الذي يخلو منهما'},
+
+  // ══ إنجليزي ابتدائي ══
+  {subject:'إنجليزي ابتدائي',grade:'4',section:'ابتدائي',unit:'Vocabulary',difficulty:'easy',question:'What color is the sky?',options:['Red','Green','Blue','Yellow'],answer:2,explanation:'The sky is blue'},
+  {subject:'إنجليزي ابتدائي',grade:'4',section:'ابتدائي',unit:'Numbers',difficulty:'easy',question:'How many days are in a week?',options:['5','6','7','8'],answer:2,explanation:'There are 7 days in a week'},
+  {subject:'إنجليزي ابتدائي',grade:'5',section:'ابتدائي',unit:'Grammar',difficulty:'easy',question:'"I ___ a student." Choose the correct verb.',options:['is','am','are','be'],answer:1,explanation:'With "I" we use "am": I am a student'},
+  {subject:'إنجليزي ابتدائي',grade:'5',section:'ابتدائي',unit:'Vocabulary',difficulty:'easy',question:'The plural of "book" is',options:['books','bookes','bookies','book'],answer:0,explanation:'Regular plural: book → books (add s)'},
+  {subject:'إنجليزي ابتدائي',grade:'6',section:'ابتدائي',unit:'Grammar',difficulty:'medium',question:'"There ___ many students in the class."',options:['is','am','are','be'],answer:2,explanation:'With plural nouns we use "are": There are many students'},
+  {subject:'إنجليزي ابتدائي',grade:'6',section:'ابتدائي',unit:'Grammar',difficulty:'medium',question:'The past tense of "go" is',options:['goed','goes','went','gone'],answer:2,explanation:'"Go" is an irregular verb, past tense = "went"'},
+
+  // ══ دراسات اجتماعية ابتدائي ══
+  {subject:'دراسات ابتدائي',grade:'4',section:'ابتدائي',unit:'الجغرافيا',difficulty:'easy',question:'عاصمة مصر هي',options:['الإسكندرية','القاهرة','الجيزة','الأقصر'],answer:1,explanation:'القاهرة هي عاصمة جمهورية مصر العربية'},
+  {subject:'دراسات ابتدائي',grade:'4',section:'ابتدائي',unit:'التاريخ',difficulty:'easy',question:'من بنى الأهرامات؟',options:['الرومان','اليونانيون','قدماء المصريين','العرب'],answer:2,explanation:'بنى قدماء المصريين الأهرامات منذ آلاف السنين'},
+  {subject:'دراسات ابتدائي',grade:'5',section:'ابتدائي',unit:'الجغرافيا',difficulty:'easy',question:'أطول نهر في مصر هو',options:['نهر الكونغو','نهر النيل','نهر الفرات','نهر دجلة'],answer:1,explanation:'نهر النيل يعبر مصر من جنوبها إلى شمالها'},
+  {subject:'دراسات ابتدائي',grade:'6',section:'ابتدائي',unit:'التاريخ',difficulty:'medium',question:'ثورة 25 يناير في مصر كانت عام',options:['2010','2011','2012','2013'],answer:1,explanation:'ثورة 25 يناير المصرية اندلعت في عام 2011'},
+
+  // ══ تربية دينية ابتدائي ══
+  {subject:'تربية دينية',grade:'4',section:'ابتدائي',unit:'القرآن',difficulty:'easy',question:'أول سورة في القرآن الكريم هي',options:['البقرة','الفاتحة','الإخلاص','الكوثر'],answer:1,explanation:'سورة الفاتحة هي السورة الأولى في المصحف الشريف'},
+  {subject:'تربية دينية',grade:'5',section:'ابتدائي',unit:'العبادات',difficulty:'easy',question:'عدد ركعات صلاة الفجر',options:['2','3','4','1'],answer:0,explanation:'صلاة الفجر ركعتان فريضة'},
+  {subject:'تربية دينية',grade:'6',section:'ابتدائي',unit:'الأخلاق',difficulty:'easy',question:'من صفات المسلم الصادق',options:['الكذب','الصدق','الغيبة','الكسل'],answer:1,explanation:'الصدق من أهم صفات المسلم، والكذب منهي عنه في الإسلام'},
+];
+
+function filterSection(btn){
+  document.querySelectorAll('[data-section]').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  qbankSection=btn.dataset.section;
+  if(!qbankData.length){loadBuiltinQBank();return;}
+  renderQBank();
+}
+function filterGrade(btn){
+  document.querySelectorAll('[data-grade]').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  qbankGrade=btn.dataset.grade;
+  if(qbankData.length) renderQBank();
+}
+
+function loadBuiltinQBank(){
+  qbankData = BUILTIN_QBANK;
+  document.getElementById('qbank-count').textContent=`${BUILTIN_QBANK.length} سؤال مدمج`;
+  renderQBank();
+}
+
+
+async function loadQBank(){
+  const filterEl=document.querySelector('#qbank-filters .qb-filter.on');
+  showLoading('جاري تحميل أسئلة من امتحانات حقيقية... 📚');
+  const prompt=`أنت خبير في امتحانات الثانوية العامة المصرية.
+اعمل 8 أسئلة حقيقية ومشابهة لأسئلة امتحانات الثانوية العامة المصرية في مادة ${subj}.
+يجب أن تكون الأسئلة بأسلوب الامتحانات الرسمية المصرية.
+أرجع JSON فقط: {"questions":[{"subject":"المادة","year":"2024","difficulty":"easy|medium|hard","question":"نص السؤال","options":["أ","ب","ج","د"],"answer":0,"explanation":"شرح الإجابة"}]}`;
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,messages:[{role:"user",content:prompt}]})});
+    const data=await res.json();
+    const raw=data.content.map(i=>i.text||'').join('');
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    qbankData=parsed.questions;
+    hideLoading();renderQBank();
+    document.getElementById('qbank-count').textContent=`${qbankData.length} سؤال`;
+  }catch(e){hideLoading();toast('حصل خطأ، حاول تاني','fail');}
+}
+function renderQBank(){
+  const filterEl=document.querySelector('#qbank-filters .qb-filter.on');
+  const subj=filterEl?.dataset.f||'all';
+  qbankSubject=subj;
+  const L=['أ','ب','ج','د'];
+  const diffMap={easy:'سهل',medium:'متوسط',hard:'صعب'};
+  const gradMap={'1':'أول','2':'تاني','3':'تالت','4':'رابع','5':'خامس','6':'سادس'};
+
+  let list=qbankData;
+  if(subj!=='all') list=list.filter(q=>q.subject===subj);
+  if(qbankSection!=='all') list=list.filter(q=>q.section===qbankSection||q.section==='مشترك');
+  if(qbankGrade!=='all') list=list.filter(q=>q.grade===qbankGrade);
+
+  document.getElementById('qbank-count').textContent=`${list.length} سؤال`;
+
+  if(!list.length){
+    document.getElementById('qbank-list').innerHTML='<div style="text-align:center;color:var(--muted);padding:30px;font-size:.88rem;">لا توجد أسئلة بهذا الفلتر</div>';
+    return;
+  }
+  document.getElementById('qbank-list').innerHTML=list.map((q)=>{
+    const diff=q.difficulty==='easy'?'easy':q.difficulty==='hard'?'hard':'med';
+    return`<div class="qb-item">
+      <div class="qb-meta">
+        <span class="qb-subj">${q.subject}</span>
+        <span style="font-size:.65rem;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);color:#a78bfa;padding:2px 7px;border-radius:10px;font-weight:700;">${gradMap[q.grade]||q.grade||''}</span>
+        ${q.unit?`<span class="qb-yr">${q.unit}</span>`:''}
+        <span class="qb-diff ${diff}">${diffMap[q.difficulty]||'متوسط'}</span>
+      </div>
+      <div class="qb-q">${q.question}</div>
+      <div class="qb-opts">
+        ${q.options.map((o,i)=>`<div class="qb-opt ${i===q.answer?'correct':''}">${L[i]}. ${o}</div>`).join('')}
+      </div>
+      <div style="margin-top:10px;font-size:.78rem;color:#7dd3fc;padding:8px 12px;background:rgba(6,182,212,.05);border-radius:8px;border:1px solid rgba(6,182,212,.12);">
+        <strong style="color:#22d3ee;">💡 الشرح:</strong> ${q.explanation}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══ LEADERBOARD ══
+async function renderLeaderboard(){
+  const allU=await getAllUsers();
+  const students=allU.filter(([,u])=>u.role==='student')
+    .map(u=>({uid:u.uid,name:u.name,points:u.points||0,exams:(u.history||[]).length,badges:(u.badges||[]).length}))
+    .sort((a,b)=>b.points-a.points);
+  const list=document.getElementById('lb-list');
+  if(!students.length){list.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;font-size:.88rem;">لسه مفيش طلاب مسجلين 🎯</div>';return;}
+  list.innerHTML=students.slice(0,20).map((s,i)=>{
+    const rank=i+1;const isMe=s.uid===CU.uid;
+    const rankCls=rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
+    const medal=rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank;
+    return`<div class="lb-row ${isMe?'me':''}">
+      <span class="lb-rank ${rankCls}">${medal}</span>
+      <div class="lb-av">${s.name[0]}</div>
+      <div style="flex:1"><div class="lb-name">${s.name}${isMe?' (أنت)':''}</div><div class="lb-exams">${s.exams} امتحان · ${s.badges} شارة</div></div>
+      <span class="lb-pts">${s.points} ⭐</span>
+    </div>`;
+  }).join('');
+}
+
+// ══ PROGRESS ══
+async function renderProgress(){
+  const ud=await getUD(CU.uid);const h=ud.history||[];
+  document.getElementById('pg-pts').textContent=ud.points||0;
+  document.getElementById('pg-exams').textContent=h.length;
+  document.getElementById('pg-fc').textContent=ud.fcCount||0;
+  if(h.length){const avg=Math.round(h.reduce((s,x)=>s+x.pct,0)/h.length);document.getElementById('pg-avg').textContent=avg+'%';}
+  // Badges
+  document.getElementById('badges-grid').innerHTML=BADGES.map(b=>{
+    const earned=(ud.badges||[]).includes(b.id);
+    return`<div class="badge-item ${earned?'earned':'locked'}" title="${b.desc}"><span class="badge-em">${b.em}</span><span class="badge-nm">${b.name}</span></div>`;
+  }).join('');
+  // Subj perf
+  if(h.length){
+    const sm={};h.forEach(x=>{if(!sm[x.subj])sm[x.subj]=[];sm[x.subj].push(x.pct);});
+    document.getElementById('subj-perf').innerHTML=Object.entries(sm).map(([s,vs])=>{
+      const a=Math.round(vs.reduce((x,y)=>x+y,0)/vs.length);const color=a>=80?'#10b981':a>=60?'#f59e0b':'#ef4444';
+      return`<div class="sp-row"><span class="sp-name">${s.substring(0,6)}</span><div class="sp-track"><div class="sp-fill" style="width:0%;background:${color}" data-w="${a}"></div></div><span class="sp-pct" style="color:${color}">${a}%</span></div>`;
+    }).join('');
+    setTimeout(()=>document.querySelectorAll('.sp-fill').forEach(b=>b.style.width=b.dataset.w+'%'),200);
+  }
+  // History
+  document.getElementById('hist-list').innerHTML=h.length?h.slice(0,15).map(x=>{
+    const cls=x.pct>=75?'hb-hi':x.pct>=50?'hb-mid':'hb-lo';
+    return`<div class="hist-row"><span class="hist-subj">${x.subj}</span><span class="hist-date">${x.date}</span><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:.7rem;color:#fbbf24;">+${x.pts||0}⭐</span><span class="hbadge ${cls}">${x.pct}%</span></div></div>`;
+  }).join(''):'<div style="color:var(--muted);font-size:.84rem;text-align:center;padding:14px;">لسه معملتش امتحانات 🎯</div>';
+}
+
+// ══ TEACHER ══
+function switchTeacherTab(name,btn){
+  document.querySelectorAll('.t-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.t-panel').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tp-'+name).classList.add('on');
+}
+
+async function renderTeacher(){
+  const allU=await getAllUsers();
+  const students=allU.filter(u=>u.role==='student');
+  const totalExams=students.reduce((s,u)=>s+(u.history||[]).length,0);
+  const allH=students.flatMap(u=>u.history||[]);
+  const avgAll=allH.length?Math.round(allH.reduce((s,x)=>s+x.pct,0)/allH.length):0;
+  // Summary
+  document.getElementById('t-summary').innerHTML=`
+    <div class="t-sum"><div class="tv v-blue">${students.length}</div><div class="tl">طالب مسجل</div></div>
+    <div class="t-sum"><div class="tv v-gold">${totalExams}</div><div class="tl">امتحان إجمالي</div></div>
+    <div class="t-sum"><div class="tv v-green">${avgAll?avgAll+'%':'—'}</div><div class="tl">متوسط الدرجات</div></div>`;
+  // Students
+  document.getElementById('students-grid').innerHTML=students.length?students.map(u=>{
+    const h=u.history||[];const avg=h.length?Math.round(h.reduce((s,x)=>s+x.pct,0)/h.length):0;
+    const aColor=avg>=75?'#34d399':avg>=50?'#fbbf24':'#f87171';
+    return`<div class="stu-card">
+      <div class="stu-top"><div class="stu-av">${u.name[0]}</div><div><div class="stu-name">${u.name}</div><div class="stu-role">طالب · ${u.points||0}⭐</div></div></div>
+      <div class="stu-stats">
+        <div class="stu-stat"><div class="sv">${h.length}</div><div class="sl">امتحان</div></div>
+        <div class="stu-stat"><div class="sv" style="color:${aColor}">${avg?avg+'%':'—'}</div><div class="sl">متوسط</div></div>
+        <div class="stu-stat"><div class="sv" style="color:#a78bfa">${(u.badges||[]).length}</div><div class="sl">شارة</div></div>
+      </div></div>`;
+  }).join(''):'<div style="color:var(--muted);font-size:.88rem;grid-column:1/-1;text-align:center;padding:20px;">لسه مفيش طلاب مسجلين</div>';
+  // Subj perf across all students
+  const sm={};allH.forEach(x=>{if(!sm[x.subj])sm[x.subj]=[];sm[x.subj].push(x.pct);});
+  document.getElementById('t-subj-perf').innerHTML=Object.keys(sm).length?Object.entries(sm).map(([s,vs])=>{
+    const a=Math.round(vs.reduce((x,y)=>x+y,0)/vs.length);const color=a>=80?'#10b981':a>=60?'#f59e0b':'#ef4444';
+    return`<div class="sp-row"><span class="sp-name">${s.substring(0,6)}</span><div class="sp-track"><div class="sp-fill" style="width:${a}%;background:${color}"></div></div><span class="sp-pct" style="color:${color}">${a}%</span></div>`;
+  }).join(''):'<div style="color:var(--muted);font-size:.84rem;padding:10px;">لا توجد بيانات بعد</div>';
+  // Weak subjects
+  const weakArr=Object.entries(sm).map(([s,vs])=>({s,avg:Math.round(vs.reduce((x,y)=>x+y,0)/vs.length),count:vs.length})).sort((a,b)=>a.avg-b.avg);
+  document.getElementById('weak-list').innerHTML=weakArr.length?weakArr.map(w=>{
+    const color=w.avg>=60?'#fbbf24':'#f87171';
+    return`<div class="weak-row"><span style="font-weight:700;">${w.s}</span><span style="font-size:.72rem;color:var(--muted);">${w.count} امتحان</span><span style="font-weight:900;color:${color};">${w.avg}%</span></div>`;
+  }).join(''):'<div style="color:var(--muted);font-size:.84rem;padding:14px;text-align:center;">لا توجد بيانات بعد</div>';
+}
+
+// ══ UTILS ══
+function showLoading(msg){document.getElementById('loading-msg').textContent=msg;document.getElementById('loading').classList.add('on');}
+function hideLoading(){document.getElementById('loading').classList.remove('on');}
+function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast on ${type}`;setTimeout(()=>t.className='toast',2600);}
+
+// ══ EXPOSE TO WINDOW (required for type="module") ══
+Object.assign(window,{
+  switchAuth,pickRole,doLogin,doRegister,doLogout,loginAsGuest,
+  goPage,goBNav,goAdmin,
+  startExam,nextQ,pickA,jmpQ,confirmQuit,reviewMode,
+  startFC,flipCard,fcRate,switchFcStage,
+  loadQBank,renderQBank,loadBuiltinQBank,filterSection,filterGrade,
+  openSubscription,openPayModal,closePayModal,
+  choosePlan,toggleBilling,
+  selectWallet,goPayStep,copyWalletNum,
+  showPaywall,closePaywall,
+  checkAdminPin,searchUser,activateUser,renderAdminUsers,quickActivate,adminClickCount,
+  switchTeacherTab,
+  toast,showLoading,hideLoading,
+});
+</script>
+</body>
+</html>
